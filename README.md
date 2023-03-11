@@ -11,23 +11,6 @@ Lo primero que se debe hacer es crear un entorno virtual e instalar las dependen
 
     pip install -r requirements.txt
     
-Y para empezar a hacer llamadas hay que [registrarse](https://developers.amadeus.com/register) y [crear un proyecto](https://developers.amadeus.com/my-apps). Después de hacer esto, se verá la sección de 'API Keys' y esas son las claves que hay que poner en el código. Ejemplo de llamada:
-
-    from amadeus import Client, ResponseError
-
-    amadeus = Client(
-        client_id='API_KEY', # que cada uno ponga la suya
-        client_secret='API_SECRET'
-    )
-
-    try:
-        response = amadeus.shopping.flight_offers_search.get(
-            originLocationCode='MAD',
-            destinationLocationCode='ATH',
-            departureDate='2022-11-01',
-            adults=1)
-        print(response.data)
-    except ResponseError as error:
-        print(error)
+Y para empezar a hacer llamadas hay que [registrarse](https://developers.amadeus.com/register) y [crear un proyecto](https://developers.amadeus.com/my-apps). Después de hacer esto, se verá la sección de 'API Keys' y esas son las claves que hay que poner en el código.
         
 Repositorio de apoyo: https://github.com/amadeus4dev/amadeus-python
