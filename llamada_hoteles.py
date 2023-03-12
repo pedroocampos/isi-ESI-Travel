@@ -16,5 +16,13 @@ try:
     direccion = response.data[0]['address']['countryCode']
     
     print("ID: " + id +"\nNombre: " + nombre +"\nCiudad: " + ciudad + "\nDireccion: " + direccion)
+    
+    lista = [id]
+    response = amadeus.shopping.hotel_offers_search.get(
+        hotelIds = lista,
+        adults = 3
+    )
+    print(response) #Imprime: <amadeus.client.response.Response object at 0x7f5ef6bea100>
+        
 except ResponseError as error:
     print(error)
