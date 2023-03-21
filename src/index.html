@@ -30,5 +30,85 @@
         </div>
     </nav>
 
+    <section class="container-fluid w-75 py-5">
+        <div class="d-flex justify-content-center">
+            <div class="caja busqueda p-4">
+                <div class="d-flex flex-wrap justify-content-between">
+                    <div class="form-floating input-ciudades">
+                        <input type="email" class="form-control" id="inputOrigen" placeholder="Origen">
+                        <label for="inputOrigen">Origen</label>
+                    </div>
+                    <div class="form-floating input-ciudades">
+                        <input type="email" class="form-control" id="inputDestino" placeholder="Destino">
+                        <label for="inputDestino">Destino</label>
+                    </div>
+                </div>
+
+                <div class="d-flex flex-wrap py-4"> <!-- TODO: Poner como valor inicial la fecha actual y demás funcionalidades -->
+                    <label class="text-white me-3" for="inputFechaSalida">Salida</label>
+                    <input class="me-5" type="date" id="inputFechaSalida">
+                    <label class="text-white me-3" for="inputFechaLlegada">Llegada</label>
+                    <input type="date" id="inputFechaLlegada">
+                </div>
+
+                <div class="d-flex justify-content-between flex-wrap">
+                    <div class="input-group mb-3 input-personas">
+                        <select class="form-select" id="inputAdultos">
+                          <option selected>Adultos (12+)</option>
+                          <option value="1">1</option>
+                          <option value="2">2</option>
+                          <option value="3">3</option>
+                          <option value="4">4</option>
+                          <option value="5">5</option>
+                          <option value="6">6</option>
+                        </select>
+                      </div>
+                      <div class="input-group mb-3 input-personas">
+                        <select class="form-select" id="inputNiños">
+                          <option selected>Niños (2-11)</option>
+                          <option value="1">1</option>
+                          <option value="2">2</option>
+                          <option value="3">3</option>
+                          <option value="4">4</option>
+                          <option value="5">5</option>
+                          <option value="6">6</option>
+                        </select>
+                      </div>
+                      <div class="input-group mb-3 input-personas">
+                        <select class="form-select" id="inputBebes">
+                          <option selected>Bebés (menor de 2)</option>
+                          <option value="1">1</option>
+                          <option value="2">2</option>
+                          <option value="3">3</option>
+                          <option value="4">4</option>
+                          <option value="5">5</option>
+                          <option value="6">6</option>
+                        </select>
+                      </div>
+                </div>
+
+                <div class="d-flex flex-wrap align-items-center">
+                    <div class="input-group mb-3 mt-2 w-50">
+                        <select class="form-select" id="inputDinero">
+                          <option selected>Precio máximo (€)</option>
+                          <option value="1">50-100</option>
+                          <option value="2">100-150</option>
+                          <option value="3">150-200</option>
+                          <option value="4">200-300</option>
+                          <option value="5">300-400</option>
+                          <option value="6">+400</option>
+                        </select>
+                    </div>
+                    <div class="form-check form-switch ms-4">
+                        <input class="form-check-input" type="checkbox" role="switch" id="checkVueloDirecto" checked>
+                        <label class="form-check-label text-white" for="flexSwitchCheckChecked">Vuelo directo</label>
+                    </div>
+                </div>
+
+                <button class="btn btn-outline-light btn-lg px-5 mt-4" type="submit">Buscar</button>
+            </div>
+        </div>
+    </section>
+
 </body>
 </html>
