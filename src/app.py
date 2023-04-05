@@ -19,11 +19,15 @@ class User(db.Model):
 
 @app.route("/")
 def home():
-    return render_template("index.html")
+    return render_template("index.html", accion="Iniciar sesión", metodo_accion="iniciar_sesion")
 
 @app.route("/login")
 def iniciar_sesion():
     return render_template("login.html")
+
+@app.route("/")
+def cerrar_sesion():
+    return render_template("index.html", accion="Iniciar sesión", metodo_accion="iniciar_sesion")
 
 @app.route("/login", methods=["POST"])
 def comprobar_usuario():
@@ -34,7 +38,7 @@ def comprobar_usuario():
     if not usuario:
         return render_template("login.html", error="Correo electrónico o contraseña incorrecto")
     else:
-        return render_template("index.html")
+        return render_template("index.html", accion="Cerrar sesión", metodo_accion="cerrar_sesion")
 
 @app.route("/registro")
 def registrar():
@@ -51,7 +55,7 @@ def insertar_usuario():
     db.session.add(usuario)
     db.session.commit()
 
-    return render_template("index.html")
+    return render_template("index.html", accion="Cerrar sesión", metododo_accion="cerrar_sesion")
 
 
 if __name__ == "__main__":

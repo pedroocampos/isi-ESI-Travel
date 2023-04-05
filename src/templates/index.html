@@ -20,8 +20,8 @@
                 <h1 class="text-black">ESI Travel</h1>
             </div>
             <div class="d-flex flex-wrap">
-                <a href="{{ url_for('iniciar_sesion') }}">
-                    <button type="button" class="btn btn-light border-radius-lg btn-header-custom">Inicia sesión</button>
+                <a href="{{ url_for(metodo_accion) }}">
+                    <button type="button" class="btn btn-light border-radius-lg btn-header-custom">{{ accion }}</button>
                 </a>
                 <a href="{{ url_for('registrar') }}">
                     <button type="button" class="btn btn-dark border-radius-lg btn-header-custom ms-3">Regístrate</button>
@@ -35,25 +35,25 @@
             <div class="caja busqueda p-4">
                 <div class="d-flex flex-wrap justify-content-between">
                     <div class="form-floating input-ciudades">
-                        <input type="email" class="form-control" id="inputOrigen" placeholder="Origen">
+                        <input type="email" class="form-control" id="inputOrigen" placeholder="Origen" required>
                         <label for="inputOrigen">Origen</label>
                     </div>
                     <div class="form-floating input-ciudades">
-                        <input type="email" class="form-control" id="inputDestino" placeholder="Destino">
+                        <input type="email" class="form-control" id="inputDestino" placeholder="Destino" required>
                         <label for="inputDestino">Destino</label>
                     </div>
                 </div>
 
                 <div class="d-flex flex-wrap py-4"> <!-- TODO: Poner como valor inicial la fecha actual y demás funcionalidades -->
                     <label class="text-white me-3" for="inputFechaSalida">Salida</label>
-                    <input class="me-5" type="date" id="inputFechaSalida">
+                    <input class="me-5" type="date" id="inputFechaSalida" required>
                     <label class="text-white me-3" for="inputFechaLlegada">Llegada</label>
-                    <input type="date" id="inputFechaLlegada">
+                    <input type="date" id="inputFechaLlegada" required>
                 </div>
 
                 <div class="d-flex justify-content-between flex-wrap">
                     <div class="input-group mb-3 input-personas">
-                        <select class="form-select" id="inputAdultos">
+                        <select class="form-select" id="inputAdultos" required>
                           <option selected>Adultos (12+)</option>
                           <option value="1">1</option>
                           <option value="2">2</option>
@@ -64,7 +64,7 @@
                         </select>
                       </div>
                       <div class="input-group mb-3 input-personas">
-                        <select class="form-select" id="inputNiños">
+                        <select class="form-select" id="inputNiños" required>
                           <option selected>Niños (2-11)</option>
                           <option value="1">1</option>
                           <option value="2">2</option>
@@ -75,7 +75,7 @@
                         </select>
                       </div>
                       <div class="input-group mb-3 input-personas">
-                        <select class="form-select" id="inputBebes">
+                        <select class="form-select" id="inputBebes" required>
                           <option selected>Bebés (menor de 2)</option>
                           <option value="1">1</option>
                           <option value="2">2</option>
@@ -89,7 +89,7 @@
 
                 <div class="d-flex flex-wrap align-items-center">
                     <div class="input-group mb-3 mt-2 w-50">
-                        <select class="form-select" id="inputDinero">
+                        <select class="form-select" id="inputDinero" required>
                           <option selected>Precio máximo (€)</option>
                           <option value="1">50-100</option>
                           <option value="2">100-150</option>
@@ -100,7 +100,7 @@
                         </select>
                     </div>
                     <div class="form-check form-switch ms-4">
-                        <input class="form-check-input" type="checkbox" role="switch" id="checkVueloDirecto" checked>
+                        <input class="form-check-input" type="checkbox" role="switch" id="checkVueloDirecto" checked required>
                         <label class="form-check-label text-white" for="flexSwitchCheckChecked">Vuelo directo</label>
                     </div>
                 </div>
