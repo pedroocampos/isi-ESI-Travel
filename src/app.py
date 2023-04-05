@@ -40,6 +40,19 @@ def comprobar_usuario():
 def registrar():
     return render_template("registro.html")
 
+@app.route("/registro", methods=["POST"])
+def insertar_usuario():
+    usuario = User(
+        username = request.form["nombre_usuario_registro"],
+        password = request.form["contraseña_registro"],
+        email = request.form["email_registro"]
+    )
+
+    db.session.add(usuario)
+    db.session.commit()
+
+    return render_template("index.html")
+
 
 if __name__ == "__main__":
     app.run(debug=True)
