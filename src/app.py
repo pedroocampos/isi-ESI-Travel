@@ -52,11 +52,13 @@ def insertar_usuario():
         email = request.form["email_registro"]
     )
 
-    db.session.add(usuario)
-    db.session.commit()
+    usuario_registrado = User.query.filter(User.email == usuario.email).first()
+    if not usuario_registrado:
+        db.session.add(usuario)
+        db.session.commit()
+        return render_template("index.html", accion="Cerrar sesión", metodo_accion="cerrar_sesion")
 
-    return render_template("index.html", accion="Cerrar sesión", metododo_accion="cerrar_sesion")
-
+    return render_template("registro.html", error="El usuario ya está registrado")
 
 if __name__ == "__main__":
     app.run(debug=True)
