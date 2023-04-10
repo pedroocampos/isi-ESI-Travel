@@ -34,7 +34,7 @@
         <div class="d-flex justify-content-center">
             <form class="caja busqueda p-4" action="{{ url_for('buscar_vuelo') }}" method="post">
                 <div class="d-flex flex-wrap justify-content-between">
-                    <div class="input-group input-ciudades">
+                    <div class="input-group input-ciudades w-50">
                         <label class="text-white me-3" for="inputOrigen">Origen</label>
                         <select class="form-select" name="inputOrigen"  emrequired>
                           <option value="1">Madrid</option>
@@ -48,6 +48,7 @@
                           <option value="9">Paris</option>
                           <option value="10">Roma</option>
                         </select>
+
                         <label class="text-white me-3" for="inputDestino">Destino</label>
                         <select class="form-select" name="inputDestino" required>
                             <option value="1">Madrid</option>

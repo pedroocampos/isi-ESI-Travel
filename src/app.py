@@ -55,8 +55,8 @@ def buscar_vuelo():
     try:
         # TODO: Resolver lo de los codigos IATA
         response = amadeus.shopping.flight_offers_search.get(
-            originLocationCode=resolverCodigoIATA(str(request.form.get("inputOrigen"))),
-            destinationLocationCode=resolverCodigoIATA(str(request.form.get("inputDestino"))),
+            originLocationCode=str(resolverCodigoIATA(str(request.form.get("inputOrigen")))),
+            destinationLocationCode=str(resolverCodigoIATA(str(request.form.get("inputDestino")))),
             departureDate=str(request.form.get("inputFechaSalida")),
             adults=str(request.form["inputAdultos"]),
             children=str(request.form["inputNiños"]),
