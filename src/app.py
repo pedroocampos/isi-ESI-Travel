@@ -1,7 +1,7 @@
-# Archivo para ir haciendo pruebas con Flask y SQLite
-
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
+from amadeus import Client, ResponseError
+from vuelo import Vuelo
 
 
 app = Flask(__name__)
@@ -10,6 +10,11 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///usuarios.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 
 db = SQLAlchemy(app)
+
+amadeus = Client(
+        client_id='H8Ci5KBBxNg7dGQ5gScDxk6feM8IGYwd',
+        client_secret='Oe9kxiuyw6ORXZVW'
+        )
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key = True)
@@ -20,6 +25,47 @@ class User(db.Model):
 @app.route("/")
 def home():
     return render_template("index.html", accion="Iniciar sesión", metodo_accion="iniciar_sesion")
+
+@app.route("/busqueda", methods=["GET", "POST"])
+def buscar_vuelo():
+    parada = request.form.get("checkVueloDirecto")
+    if parada == "on":
+        parada = "true"
+    else:
+        parada = "false"
+
+    try:
+        # TODO: Resolver lo de los codigos IATA
+        response = amadeus.shopping.flight_offers_search.get(
+            originLocationCode='MAD',
+            destinationLocationCode='BCN',
+            departureDate=str(request.form.get("inputFechaSalida")),
+            adults=str(request.form["inputAdultos"]),
+            children=str(request.form["inputNiños"]),
+            infants=str(request.form["inputBebes"]),
+            nonStop=parada
+        )
+    except ResponseError as error_msg:
+        print(error_msg)
+
+    lista_vuelos = []
+    for i in range(len(response.data) - 1):
+        vuelo = Vuelo(
+            id = response.data[i]['id'],
+            origen = response.data[i]['itineraries'][0]['segments'][0]['departure']['iataCode'],
+            destino = response.data[i]['itineraries'][0]['segments'][0]['arrival']['iataCode'],
+            fecha = response.data[i]['itineraries'][0]['segments'][0]['departure']['at'][0:10],
+            horaSalida = response.data[i]['itineraries'][0]['segments'][0]['departure']['at'][11:16],
+            horaLlegada = response.data[i]['itineraries'][0]['segments'][0]['arrival']['at'][11:16],
+            compania = response.data[i]['itineraries'][0]['segments'][0]['carrierCode'],
+            paradas = response.data[i]['itineraries'][0]['segments'][0]['numberOfStops'],
+            precio = response.data[i]['price']['total'],
+            asientosDisponibles = response.data[i]['numberOfBookableSeats']
+        )
+        lista_vuelos.append(vuelo)
+
+    return render_template("index.html", vuelos=lista_vuelos, accion="Iniciar sesión", metodo_accion="iniciar_sesion")
+
 
 @app.route("/login")
 def iniciar_sesion():
@@ -52,7 +98,7 @@ def insertar_usuario():
         email = request.form["email_registro"]
     )
 
-    usuario_registrado = User.query.filter(User.email == usuario.email).first()
+    usuario_registrado = User.query.filter(User.email == usuario.email, User.username == usuario.username, User.password == usuario.password).first()
     if not usuario_registrado:
         db.session.add(usuario)
         db.session.commit()

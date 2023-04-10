@@ -16,9 +16,9 @@ def main():
         disponibilidad = lista[0]['available']
     )
     print(hotel)
-    
+
     print("\n--------------------------------\n")
-    
+
     bv = busqueda_vuelos()
     listaVuelos = bv.busqueda()
     vuelo = Vuelo(
@@ -31,7 +31,7 @@ def main():
         compania = listaVuelos[0]['itineraries'][0]['segments'][0]['carrierCode'],
         paradas = listaVuelos[0]['itineraries'][0]['segments'][0]['numberOfStops'],
         precio = listaVuelos[0]['price']['total'],
-        asientosDisponibles = listaVuelos[0]['numberOfBookableSeats'] 
+        asientosDisponibles = listaVuelos[0]['numberOfBookableSeats']
     )
     print(vuelo)
 

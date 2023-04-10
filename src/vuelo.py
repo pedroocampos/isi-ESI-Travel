@@ -12,7 +12,7 @@ class Vuelo:
         self.paradas = paradas
         self.precio = precio
         self.asientosDisponibles = asientosDisponibles
-    
+
     def __str__(self):
         return "ID: " + str(self.id) + "\nOrigen: " + self.origen + "\nDestino: " + self.destino + "\nFecha: " + self.fecha + "\nHora salida: " + self.horaSalida + "\nHora llegada: " + self.horaLlegada + "\nCompañia: " + self.compania + "\nParadas: " + str(self.paradas) + "\nPrecio: " + str(self.precio) + "\nAsientos disponibles: " + str(self.asientosDisponibles)
 
@@ -30,13 +30,13 @@ class busqueda_vuelos():
             response = amadeus.shopping.flight_offers_search.get(
                 originLocationCode='MAD',
                 destinationLocationCode='BCN',
-                departureDate='2023-04-13',
+                departureDate='2023-04-11',
                 adults='2',
                 children='1',
                 infants='1',
                 nonStop='true'
             )
             return response.data
-            
+
         except ResponseError as error:
             print(error)
