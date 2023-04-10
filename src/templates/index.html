@@ -34,13 +34,33 @@
         <div class="d-flex justify-content-center">
             <form class="caja busqueda p-4" action="{{ url_for('buscar_vuelo') }}" method="post">
                 <div class="d-flex flex-wrap justify-content-between">
-                    <div class="form-floating input-ciudades">
-                        <input type="text" class="form-control" name="inputOrigen" placeholder="Origen" required>
-                        <label for="inputOrigen">Origen</label>
-                    </div>
-                    <div class="form-floating input-ciudades">
-                        <input type="text" class="form-control" name="inputDestino" placeholder="Destino" required>
-                        <label for="inputDestino">Destino</label>
+                    <div class="input-group input-ciudades">
+                        <label class="text-white me-3" for="inputOrigen">Origen</label>
+                        <select class="form-select" name="inputOrigen"  emrequired>
+                          <option value="1">Madrid</option>
+                          <option value="2">Barcelona</option>
+                          <option value="3">Palma de Mallorca</option>
+                          <option value="4">Malaga</option>
+                          <option value="5">Alicante</option>
+                          <option value="6">Valencia</option>
+                          <option value="7">Gran Canarias</option>
+                          <option value="8">Londres</option>
+                          <option value="9">Paris</option>
+                          <option value="10">Roma</option>
+                        </select>
+                        <label class="text-white me-3" for="inputDestino">Destino</label>
+                        <select class="form-select" name="inputDestino" required>
+                            <option value="1">Madrid</option>
+                            <option value="2">Barcelona</option>
+                            <option value="3">Palma de Mallorca</option>
+                            <option value="4">Malaga</option>
+                            <option value="5">Alicante</option>
+                            <option value="6">Valencia</option>
+                            <option value="7">Gran Canarias</option>
+                            <option value="8">Londres</option>
+                            <option value="9">Paris</option>
+                            <option value="10">Roma</option>
+                          </select>
                     </div>
                 </div>
 
