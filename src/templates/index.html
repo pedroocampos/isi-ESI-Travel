@@ -136,6 +136,7 @@
             <table class="table">
                 <thead>
                     <tr>
+                        <th scope="col">#</th>
                         <th scope="col">Origen</th>
                         <th scope="col">Destino</th>
                         <th scope="col">Precio</th>
@@ -147,6 +148,7 @@
                 <tbody class="table-group-divider">
                     {% for vuelo in vuelos %}
                         <tr>
+                            <td>{{ vuelo.id }}</td>
                             <td>{{ vuelo.origen }}</td>
                             <td>{{ vuelo.destino }}</td>
                             <td>{{ vuelo.precio }}</td>
@@ -154,7 +156,7 @@
                             <td>{{ vuelo.horaLlegada }}</td>
                             <td>{{ vuelo.asientosDisponibles }}</td>
                             <td>
-                                <button class="btn btn-outline-light btn-dark" >Reservar</button>
+                                <td><a href="{{ url_for('reservar_vuelo', numero_vuelo=vuelo.id) }}" class="btn btn-outline-light btn-dark">Reservar</a></td>
                             </td>
                         </tr>
                     {% endfor %}

@@ -22,9 +22,65 @@ class User(db.Model):
     password = db.Column(db.String(80))
     email = db.Column(db.String(100))
 
+lista_vuelos = []
+usuario_activo = {
+    "correo": None,
+    "nombre_usuario": None,
+    "password": None
+}
+
 @app.route("/")
 def home():
     return render_template("index.html", accion="Iniciar sesión", metodo_accion="iniciar_sesion")
+
+@app.route("/login")
+def iniciar_sesion():
+    return render_template("login.html")
+
+@app.route("/login", methods=["POST"])
+def comprobar_usuario():
+    correo_electronico = request.form["email_login"]
+    contraseña = request.form["contraseña_login"]
+
+    usuario = User.query.filter(User.email == correo_electronico, User.password == contraseña).first()
+    if not usuario:
+        return render_template("login.html", error="Correo electrónico o contraseña incorrecto")
+    else:
+        usuario_activo["correo"] = usuario.email
+        usuario_activo["nombre_usuario"] = usuario.username
+        usuario_activo["password"] = usuario.password
+        print(usuario_activo)
+        return render_template("index.html", accion="Cerrar sesión", metodo_accion="cerrar_sesion")
+
+@app.route("/cerrar_sesion")
+def cerrar_sesion():
+    usuario_activo["correo"] = None
+    usuario_activo["nombre_usuario"] = None
+    usuario_activo["password"] = None
+    return render_template("index.html", accion="Iniciar sesión", metodo_accion="iniciar_sesion")
+
+@app.route("/registro")
+def registrar():
+    return render_template("registro.html")
+
+@app.route("/registro", methods=["POST"])
+def insertar_usuario():
+    usuario = User(
+        username = request.form["nombre_usuario_registro"],
+        password = request.form["contraseña_registro"],
+        email = request.form["email_registro"]
+    )
+
+    usuario_registrado = User.query.filter(User.email == usuario.email, User.username == usuario.username, User.password == usuario.password).first()
+    if not usuario_registrado:
+        usuario_activo["correo"] = usuario_registrado.email
+        usuario_activo["nombre_usuario"] = usuario_registrado.username
+        usuario_activo["password"] = usuario_registrado.password
+        db.session.add(usuario)
+        db.session.commit()
+        return render_template("index.html", accion="Cerrar sesión", metodo_accion="cerrar_sesion")
+
+    return render_template("registro.html", error="El usuario ya está registrado")
 
 @app.route("/busqueda", methods=["GET", "POST"])
 def buscar_vuelo():
@@ -47,7 +103,8 @@ def buscar_vuelo():
     except ResponseError as error_msg:
         print(error_msg)
 
-    lista_vuelos = []
+    lista_vuelos.clear()
+
     for i in range(len(response.data) - 1):
         vuelo = Vuelo(
             id = response.data[i]['id'],
@@ -62,48 +119,20 @@ def buscar_vuelo():
             asientosDisponibles = response.data[i]['numberOfBookableSeats']
         )
         lista_vuelos.append(vuelo)
+        # TODO: Encontrar la forma de que si se ha hecho una busqueda y se hace un render_template de index.html no se borre la busqueda
 
-    return render_template("index.html", vuelos=lista_vuelos, accion="Iniciar sesión", metodo_accion="iniciar_sesion")
+    if not usuario_activo["correo"]:
+        return render_template("index.html", vuelos=lista_vuelos, accion="Iniciar sesión", metodo_accion="iniciar_sesion")
 
+    return render_template("index.html", vuelos=lista_vuelos, accion="Cerrar sesión", metodo_accion="cerrar_sesion")
 
-@app.route("/login")
-def iniciar_sesion():
-    return render_template("login.html")
+@app.route("/reservar/<int:numero_vuelo>")
+def reservar_vuelo(numero_vuelo):
+    if not usuario_activo["correo"]:
+        print("no hay usuario")
+    vuelo = lista_vuelos[numero_vuelo - 1]
+    # TODO: Seguir con los hoteles
 
-@app.route("/")
-def cerrar_sesion():
-    return render_template("index.html", accion="Iniciar sesión", metodo_accion="iniciar_sesion")
-
-@app.route("/login", methods=["POST"])
-def comprobar_usuario():
-    correo_electronico = request.form["email_login"]
-    contraseña = request.form["contraseña_login"]
-
-    usuario = User.query.filter(User.email == correo_electronico, User.password == contraseña).first()
-    if not usuario:
-        return render_template("login.html", error="Correo electrónico o contraseña incorrecto")
-    else:
-        return render_template("index.html", accion="Cerrar sesión", metodo_accion="cerrar_sesion")
-
-@app.route("/registro")
-def registrar():
-    return render_template("registro.html")
-
-@app.route("/registro", methods=["POST"])
-def insertar_usuario():
-    usuario = User(
-        username = request.form["nombre_usuario_registro"],
-        password = request.form["contraseña_registro"],
-        email = request.form["email_registro"]
-    )
-
-    usuario_registrado = User.query.filter(User.email == usuario.email, User.username == usuario.username, User.password == usuario.password).first()
-    if not usuario_registrado:
-        db.session.add(usuario)
-        db.session.commit()
-        return render_template("index.html", accion="Cerrar sesión", metodo_accion="cerrar_sesion")
-
-    return render_template("registro.html", error="El usuario ya está registrado")
 
 if __name__ == "__main__":
     app.run(debug=True)
