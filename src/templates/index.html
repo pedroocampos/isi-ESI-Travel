@@ -34,34 +34,35 @@
         <div class="d-flex justify-content-center">
             <form class="caja busqueda p-4" action="{{ url_for('buscar_vuelo') }}" method="post">
                 <div class="d-flex flex-wrap justify-content-between">
-                    <div class="input-group input-ciudades w-50">
-                        <label class="text-white me-3" for="inputOrigen">Origen</label>
-                        <select class="form-select" name="inputOrigen"  emrequired>
-                          <option value="1">Madrid</option>
-                          <option value="2">Barcelona</option>
-                          <option value="3">Palma de Mallorca</option>
-                          <option value="4">Malaga</option>
-                          <option value="5">Alicante</option>
-                          <option value="6">Valencia</option>
-                          <option value="7">Gran Canarias</option>
-                          <option value="8">Londres</option>
-                          <option value="9">Paris</option>
-                          <option value="10">Roma</option>
+                    <div class="input-group input-ciudad">
+                        <select class="form-select" name="inputOrigen" required>
+                          <option value="">Origen</option>
+                          <option value="MAD">Madrid</option>
+                          <option value="BCN">Barcelona</option>
+                          <option value="PMI">Palma de Mallorca</option>
+                          <option value="AGP">Malaga</option>
+                          <option value="ALC">Alicante</option>
+                          <option value="VLC">Valencia</option>
+                          <option value="LPA">Gran Canarias</option>
+                          <option value="LHR">Londres</option>
+                          <option value="CDG">Paris</option>
+                          <option value="FCO">Roma</option>
                         </select>
-
-                        <label class="text-white me-3" for="inputDestino">Destino</label>
+                    </div>
+                    <div class="input-group input-ciudad">
                         <select class="form-select" name="inputDestino" required>
-                            <option value="1">Madrid</option>
-                            <option value="2">Barcelona</option>
-                            <option value="3">Palma de Mallorca</option>
-                            <option value="4">Malaga</option>
-                            <option value="5">Alicante</option>
-                            <option value="6">Valencia</option>
-                            <option value="7">Gran Canarias</option>
-                            <option value="8">Londres</option>
-                            <option value="9">Paris</option>
-                            <option value="10">Roma</option>
-                          </select>
+                          <option value="">Destino</option>
+                          <option value="MAD">Madrid</option>
+                          <option value="BCN">Barcelona</option>
+                          <option value="PMI">Palma de Mallorca</option>
+                          <option value="AGP">Malaga</option>
+                          <option value="ALC">Alicante</option>
+                          <option value="VLC">Valencia</option>
+                          <option value="LPA">Gran Canarias</option>
+                          <option value="LHR">Londres</option>
+                          <option value="CDG">Paris</option>
+                          <option value="FCO">Roma</option>
+                        </select>
                     </div>
                 </div>
 
@@ -75,17 +76,17 @@
                 <div class="d-flex justify-content-between flex-wrap">
                     <div class="input-group mb-3 input-personas">
                         <select class="form-select" name="inputAdultos" required>
-                          <option selected>Adultos (12+)</option>
+                          <option value="">Adultos (12+)</option>
                           <option value="1">1</option>
                           <option value="2">2</option>
                           <option value="3">3</option>
                           <option value="4">4</option>
                           <option value="5">5</option>
                         </select>
-                      </div>
+                    </div>
                       <div class="input-group mb-3 input-personas">
                         <select class="form-select" name="inputNiños" required>
-                          <option selected>Niños (2-11)</option>
+                          <option value="">Niños (2-11)</option>
                           <option value="0">0</option>
                           <option value="1">1</option>
                           <option value="2">2</option>
@@ -96,7 +97,7 @@
                       </div>
                       <div class="input-group mb-3 input-personas">
                         <select class="form-select" name="inputBebes" required>
-                          <option selected>Bebés (menor de 2)</option>
+                          <option value="">Bebés (menor de 2)</option>
                           <option value="0">0</option>
                           <option value="1">1</option>
                           <option value="2">2</option>
@@ -110,7 +111,7 @@
                 <div class="d-flex flex-wrap align-items-center">
                     <div class="input-group mb-3 mt-2 w-50">
                         <select class="form-select" name="inputDinero" required>
-                          <option selected>Precio máximo (€)</option>
+                          <option value="">Precio máximo (€)</option>
                           <option value="1">50-100</option>
                           <option value="2">100-150</option>
                           <option value="3">150-200</option>
@@ -131,30 +132,35 @@
             </form>
         </div>
 
-        <!-- TODO: Poner bonito-->
-        <div class="d-flex justify-content-center mt-5 resultados-busqueda">
-            <table>
+        <form class="table-responsive mt-5">
+            <table class="table">
                 <thead>
                     <tr>
-                        <th>Origen</th>
-                        <th>Destino</th>
-                        <th>Precio</th>
+                        <th scope="col">Origen</th>
+                        <th scope="col">Destino</th>
+                        <th scope="col">Precio</th>
+                        <th scope="col">Hora de salida</th>
+                        <th scope="col">Hora de llegada</th>
+                        <th scope="col">Asientos disponibles</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="table-group-divider">
                     {% for vuelo in vuelos %}
                         <tr>
                             <td>{{ vuelo.origen }}</td>
                             <td>{{ vuelo.destino }}</td>
                             <td>{{ vuelo.precio }}</td>
+                            <td>{{ vuelo.horaSalida }}</td>
+                            <td>{{ vuelo.horaLlegada }}</td>
+                            <td>{{ vuelo.asientosDisponibles }}</td>
+                            <td>
+                                <button class="btn btn-outline-light btn-dark" >Reservar</button>
+                            </td>
                         </tr>
                     {% endfor %}
                 </tbody>
             </table>
-        </div>
-
-
+        </form>
     </section>
-
 </body>
 </html>

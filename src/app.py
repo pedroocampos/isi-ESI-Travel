@@ -6,33 +6,15 @@ from vuelo import Vuelo
 
 app = Flask(__name__)
 
-ciudades_IATA = {
-    "madrid": "MAD",
-    "barcelona": "BCN",
-    "palma de mallorca": "PMI",
-    "malaga": "AGP",
-    "alicante": "ALC",
-    "valencia": "VLC",
-    "gran canarias": "LPA",
-    "londres": "LHR",
-    "paris": "CDG",
-    "roma": "FCO"
-}
-
-def resolverCodigoIATA(ciudad):
-    codigo_iata = ciudades_IATA.get(ciudad.lower(), None)
-    return codigo_iata
-
-
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///usuarios.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 
 db = SQLAlchemy(app)
 
 amadeus = Client(
-        client_id='H8Ci5KBBxNg7dGQ5gScDxk6feM8IGYwd',
-        client_secret='Oe9kxiuyw6ORXZVW'
-        )
+    client_id='H8Ci5KBBxNg7dGQ5gScDxk6feM8IGYwd',
+    client_secret='Oe9kxiuyw6ORXZVW'
+    )
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key = True)
@@ -53,10 +35,9 @@ def buscar_vuelo():
         parada = "false"
 
     try:
-        # TODO: Resolver lo de los codigos IATA
         response = amadeus.shopping.flight_offers_search.get(
-            originLocationCode=str(resolverCodigoIATA(str(request.form.get("inputOrigen")))),
-            destinationLocationCode=str(resolverCodigoIATA(str(request.form.get("inputDestino")))),
+            originLocationCode=str(request.form["inputOrigen"]),
+            destinationLocationCode=str(request.form["inputDestino"]),
             departureDate=str(request.form.get("inputFechaSalida")),
             adults=str(request.form["inputAdultos"]),
             children=str(request.form["inputNiños"]),
