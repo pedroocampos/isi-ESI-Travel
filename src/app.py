@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from amadeus import Client, ResponseError
 from vuelo import Vuelo
+from hotel import Hotel
 
 
 app = Flask(__name__)
@@ -16,6 +17,14 @@ amadeus = Client(
     client_secret='Oe9kxiuyw6ORXZVW'
     )
 
+global destinationLocationCode
+global pasajerosTotal
+global adults
+global children
+global infants
+global departureDate
+
+
 class User(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     username = db.Column(db.String(100))
@@ -23,6 +32,7 @@ class User(db.Model):
     email = db.Column(db.String(100))
 
 lista_vuelos = []
+lista_hoteles = []
 usuario_activo = {
     "correo": None,
     "nombre_usuario": None,
@@ -103,6 +113,7 @@ def buscar_vuelo():
     except ResponseError as error_msg:
         print(error_msg)
 
+    pasajerosTotal = int(request.form["inputAdultos"]) + int(request.form["inputNiños"]) + int(request.form["inputBebes"])
     lista_vuelos.clear()
 
     for i in range(len(response.data) - 1):
@@ -118,7 +129,11 @@ def buscar_vuelo():
             precio = response.data[i]['price']['total'],
             asientosDisponibles = response.data[i]['numberOfBookableSeats']
         )
-        lista_vuelos.append(vuelo)
+        if pasajerosTotal > vuelo.asientosDisponibles:
+            continue
+        else:
+            lista_vuelos.append(vuelo)
+
         # TODO: Encontrar la forma de que si se ha hecho una busqueda y se hace un render_template de index.html no se borre la busqueda
 
     if not usuario_activo["correo"]:
@@ -131,6 +146,43 @@ def reservar_vuelo(numero_vuelo):
     if not usuario_activo["correo"]:
         print("no hay usuario")
     vuelo = lista_vuelos[numero_vuelo - 1]
+    return render_template("hoteles.html")
+
+
+
+def buscar_hoteles():
+    lista = []
+    try:
+        response_code = amadeus.reference_data.locations.hotels.by_city.get(
+            cityCode = destinationLocationCode,
+            radius = 10
+        )
+
+        for i in range(0, len(response_code.data)):
+            lista.append(response_code.data[i]['hotelId'])
+
+        response_ids = amadeus.shopping.hotel_offers_search.get(
+            hotelIds = lista,
+            adults = 3
+        )
+
+    except ResponseError as error_msg:
+        print(error_msg)
+
+    for i in range(len(response_ids.data) - 1):
+        hotel = Hotel(
+            id = response_ids.data[i]['hotelId'],
+            nombre = response_ids.data[i]['name'],
+            ubicacion= response_ids.data[i]['address']['cityName'],
+            estrellas = response_ids.data[i]["offers"][0]["hotel"]["rating"],
+            precio = response_ids.data[i]["offers"][0]["price"]["total"],
+            fechaSalida = response_ids.data[i]["offers"][0]["price"]["checkOutDate"],
+            fechaEntrada = response_ids.data[i]["offers"][0]["price"]["checkInDate"],
+            disponibilidad= response_ids.data[i]["offers"][0]["available"]
+        )
+
+        lista_hoteles.append(hotel)
+
     # TODO: Seguir con los hoteles
 
 

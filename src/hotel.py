@@ -10,14 +10,14 @@ class Hotel():
         self.fechaSalida = fechaSalida
         self.fechaEntrada = fechaEntrada
         self.disponibilidad = disponibilidad
-    
+
     def __str__(self):
         return "ID: " + self.id + "\nNombre: " + self.nombre + "\nUbicacion: " + self.ubicacion + "\nEstrellas: " + str(self.estrellas) + "\nPrecio: " + str(self.precio) + "\nFecha de salida: " + self.fechaSalida + "\nFecha de entrada: " + self.fechaEntrada + "\nDisponibilidad: " + str(self.disponibilidad)
 
 class busqueda_hoteles():
     def __init__(self):
         self.lista = []
-        
+
     def busqueda(self):
         amadeus = Client(
             client_id='H8Ci5KBBxNg7dGQ5gScDxk6feM8IGYwd',
@@ -37,8 +37,8 @@ class busqueda_hoteles():
                 hotelIds = self.lista,
                 adults = 3
             )
-            
-            return response.data 
-                
+
+            return response.data
+
         except ResponseError as error:
             print(error)

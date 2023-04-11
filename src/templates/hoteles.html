@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
+    <link rel="icon" href="{{ url_for('static', filename='logo.png') }}" type="image/x-icon" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='estilos.css') }}">
+    <title>ESI-Travel | Encuentra vuelos y hoteles baratos</title>
+
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg bg-white py-3 cabecera">
+        <div class="container-fluid w-75">
+            <div class="d-flex align-items-center justify-content-between flex-header">
+                <img src="{{ url_for('static', filename='logo.png') }}" class="img-fluid rounded-circle" width="20%" alt="Logo ESI-Travel">
+                <h1 class="text-black">ESI Travel</h1>
+            </div>
+            <div class="d-flex flex-wrap">
+                <a href="{{ url_for(metodo_accion) }}">
+                    <button type="button" class="btn btn-light border-radius-lg btn-header-custom">{{ accion }}</button>
+                </a>
+                <a href="{{ url_for('registrar') }}">
+                    <button type="button" class="btn btn-dark border-radius-lg btn-header-custom ms-3">Regístrate</button>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <section class="container-fluid w-75 py-5">
+        <div class="d-flex justify-content-center">
+            <form class="caja busqueda p-4" action="{{ url_for('buscar_vuelo') }}" method="post">
+                <div class="d-flex flex-wrap justify-content-between">
+                    <div class="input-group input-ciudad">
+                        <select class="form-select" name="inputOrigen" required>
+                          <option value="">Origen</option>
+                          <option value="MAD">Madrid</option>
+                          <option value="BCN">Barcelona</option>
+                          <option value="PMI">Palma de Mallorca</option>
+                          <option value="AGP">Malaga</option>
+                          <option value="ALC">Alicante</option>
+                          <option value="VLC">Valencia</option>
+                          <option value="LPA">Gran Canarias</option>
+                          <option value="LHR">Londres</option>
+                          <option value="CDG">Paris</option>
+                          <option value="FCO">Roma</option>
+                        </select>
+                    </div>
+                    <div class="input-group input-ciudad">
+                        <select class="form-select" name="inputDestino" required>
+                          <option value="">Destino</option>
+                          <option value="MAD">Madrid</option>
+                          <option value="BCN">Barcelona</option>
+                          <option value="PMI">Palma de Mallorca</option>
+                          <option value="AGP">Malaga</option>
+                          <option value="ALC">Alicante</option>
+                          <option value="VLC">Valencia</option>
+                          <option value="LPA">Gran Canarias</option>
+                          <option value="LHR">Londres</option>
+                          <option value="CDG">Paris</option>
+                          <option value="FCO">Roma</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="d-flex flex-wrap py-4"> <!-- TODO: Poner como valor inicial la fecha actual y demás funcionalidades -->
+                    <label class="text-white me-3" for="inputFechaSalida">Salida</label>
+                    <input class="me-5" type="date" name="inputFechaSalida" required>
+                    <label class="text-white me-3" for="inputFechaLlegada">Llegada</label>
+                    <input type="date" name="inputFechaLlegada" required>
+                </div>
+
+                <div class="d-flex justify-content-between flex-wrap">
+                    <div class="input-group mb-3 input-personas">
+                        <select class="form-select" name="inputAdultos" required>
+                          <option value="">Adultos (12+)</option>
+                          <option value="1">1</option>
+                          <option value="2">2</option>
+                          <option value="3">3</option>
+                          <option value="4">4</option>
+                          <option value="5">5</option>
+                        </select>
+                    </div>
+                      <div class="input-group mb-3 input-personas">
+                        <select class="form-select" name="inputNiños" required>
+                          <option value="">Niños (2-11)</option>
+                          <option value="0">0</option>
+                          <option value="1">1</option>
+                          <option value="2">2</option>
+                          <option value="3">3</option>
+                          <option value="4">4</option>
+                          <option value="5">5</option>
+                        </select>
+                      </div>
+                      <div class="input-group mb-3 input-personas">
+                        <select class="form-select" name="inputBebes" required>
+                          <option value="">Bebés (menor de 2)</option>
+                          <option value="0">0</option>
+                          <option value="1">1</option>
+                          <option value="2">2</option>
+                          <option value="3">3</option>
+                          <option value="4">4</option>
+                          <option value="5">5</option>
+                        </select>
+                      </div>
+                </div>
+
+                <div class="d-flex flex-wrap align-items-center">
+                    <div class="input-group mb-3 mt-2 w-50">
+                        <select class="form-select" name="inputDinero" required>
+                          <option value="">Precio máximo (€)</option>
+                          <option value="1">50-100</option>
+                          <option value="2">100-150</option>
+                          <option value="3">150-200</option>
+                          <option value="4">200-300</option>
+                          <option value="5">300-400</option>
+                          <option value="6">+400</option>
+                        </select>
+                    </div>
+                    <div class="form-check form-switch ms-4">
+                        <input class="form-check-input" type="checkbox" role="switch" name="checkVueloDirecto" checked>
+                        <label class="form-check-label text-white" for="flexSwitchCheckChecked">Vuelo directo</label>
+                    </div>
+                </div>
+
+                <span class="mensaje-error"><b>{{ error }}</b></span>
+
+                <button class="btn btn-outline-light btn-lg px-5 mt-4" type="submit">Buscar</button>
+            </form>
+        </div>
+
+        <form class="table-responsive mt-5">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Nombre</th>
+                        <th scope="col">Ubicación</th>
+                        <th scope="col">Precio</th>
+                        <th scope="col">Número de estrellas</th>
+                        <th scope="col">Fecha Entrada</th>
+                        <th scope="col">Fecha Salida</th>
+                    </tr>
+                </thead>
+                <tbody class="table-group-divider">
+                    {% for hotel in hoteles %}
+                        <tr>
+                            <td>{{ hotel.id }}</td>
+                            <td>{{ hotel.nombre }}</td>
+                            <td>{{ hotel.ubicacion }}</td>
+                            <td>{{ hotel.precio }}</td>
+                            <td>{{ hotel.estrellas }}</td>
+                            <td>{{ hotel.fechaEntrada }}</td>
+                            <td>{{ hotel.fechaSalida }}</td>
+                            <td>
+                                <td><a href="{{ url_for('reservar_hotel', numero_hotel=hotel.id) }}" class="btn btn-outline-light btn-dark">Reservar</a></td>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </form>
+    </section>
+</body>
+</html>
