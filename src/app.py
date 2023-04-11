@@ -146,10 +146,10 @@ def reservar_vuelo(numero_vuelo):
     if not usuario_activo["correo"]:
         print("no hay usuario")
     vuelo = lista_vuelos[numero_vuelo - 1]
-    return render_template("hoteles.html")
+    return render_template("hoteles.html", accion="Reservar", metodo_accion="buscar_hoteles")
 
 
-
+@app.route("/busqueda", methods=["GET", "POST"])
 def buscar_hoteles():
     lista = []
     try:
