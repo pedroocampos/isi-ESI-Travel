@@ -114,16 +114,15 @@ def terminar_reserva(hotel, precio_hotel): # TODO: Resolver este error TypeError
     precio_reserva = float(reserva["vuelo_ida"].precio)
     ocultar_etiquetas = True
     ocultar_vuelta = True
-    
-    if reserva["vuelo_vuelta"] != None:
-        precio_reserva += float(reserva["vuelo_vuelta"].precio)
-        ocultar_vuelta = False
         
     if hotel != "":
         precio_reserva = reserva["vuelo_ida"].precio + precio_hotel
         ocultar_etiquetas = False
-
-    return render_template("reserva.html",
+    
+    if reserva["vuelo_vuelta"] != None:
+        precio_reserva += float(reserva["vuelo_vuelta"].precio)
+        ocultar_vuelta = False
+        return render_template("reserva.html",
                            correo_electronico = usuario_activo["correo"],
                            vuelo_ida = reserva["vuelo_ida"].origen + " -> " + reserva["vuelo_ida"].destino,
                            hora_salida_ida = reserva["vuelo_ida"].horaSalida,
@@ -136,6 +135,17 @@ def terminar_reserva(hotel, precio_hotel): # TODO: Resolver este error TypeError
                            ocultar_vuelta = ocultar_vuelta,
                            ocultar_etiquetas = ocultar_etiquetas
             )
+    return render_template("reserva.html",
+                        correo_electronico = usuario_activo["correo"],
+                        vuelo_ida = reserva["vuelo_ida"].origen + " -> " + reserva["vuelo_ida"].destino,
+                        hora_salida_ida = reserva["vuelo_ida"].horaSalida,
+                        hora_llegada_ida = reserva["vuelo_ida"].horaLlegada,
+                        nombre_hotel = hotel,
+                        precio = precio_reserva,
+                        ocultar_vuelta = ocultar_vuelta,
+                        ocultar_etiquetas = ocultar_etiquetas
+        )
+    
 
 @app.route("/busqueda/vuelos", methods=["GET", "POST"])
 def buscar_vuelo():
@@ -235,6 +245,7 @@ def reservar_vuelo(numero_vuelo):
     if not usuario_activo["correo"]:
         return render_template("login.html")
 
+    print("Antes de buscar hoteles")
     if buscar_alojamiento:
         print("Buscando hoteles...")
         return render_template("hoteles.html", hoteles=lista_hoteles, accion="Cerrar sesión", metodo_accion="cerrar_sesion")

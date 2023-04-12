@@ -155,28 +155,40 @@
                         <tr>
                             <td>{{ vuelo.id }}</td>
                             <td>{{ vuelo.origen }}
-                                <br>
-                                {{ vuelos_vuelta[loop.index-1].origen }}
+                                {% if vuelos_vuelta %}
+                                    <br>
+                                    {{ vuelos_vuelta[loop.index-1].origen }}
+                                {% endif %}
                             </td>
                             <td>{{ vuelo.destino }}
-                                <br>
-                                {{ vuelos_vuelta[loop.index-1].destino }}
+                                {% if vuelos_vuelta %}
+                                    <br>
+                                    {{ vuelos_vuelta[loop.index-1].destino }}
+                                {% endif %}
                             </td>
                             <td>{{ vuelo.precio }}
-                                <br>
-                                {{ vuelos_vuelta[loop.index-1].precio }}
+                                {% if vuelos_vuelta %}
+                                    <br>
+                                    {{ vuelos_vuelta[loop.index-1].precio }}
+                                {% endif %}
                             </td>
                             <td>{{ vuelo.horaSalida }}
-                                <br>
-                                {{ vuelos_vuelta[loop.index-1].horaSalida }}
+                                {% if vuelos_vuelta %}
+                                    <br>
+                                    {{ vuelos_vuelta[loop.index-1].horaSalida }}
+                                {% endif %}
                             </td>
                             <td>{{ vuelo.horaLlegada }}
-                                <br>
-                                {{ vuelos_vuelta[loop.index-1].horaLlegada }}
+                                {% if vuelos_vuelta %}
+                                    <br>
+                                    {{ vuelos_vuelta[loop.index-1].horaLlegada }}
+                                {% endif %}
                             </td>
                             <td>{{ vuelo.asientosDisponibles }}
-                                <br>
-                                {{ vuelos_vuelta[loop.index-1].asientosDisponibles }}
+                                {% if vuelos_vuelta %}
+                                    <br>
+                                    {{ vuelos_vuelta[loop.index-1].asientosDisponibles }}
+                                {% endif %}
                             </td>
                             <td>
                                 <td><a href="{{ url_for('reservar_vuelo', numero_vuelo=vuelo.id) }}" class="btn btn-outline-light btn-dark">Reservar</a></td>
