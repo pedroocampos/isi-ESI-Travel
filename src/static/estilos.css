@@ -64,3 +64,7 @@ a {
 .mensaje-error {
     color: red;
 }
+
+.oculta {
+    display: none;
+}

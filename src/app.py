@@ -32,7 +32,6 @@ usuario_activo = {
 }
 reserva = {
     "vuelo": None,
-    "usuario": None,
     "hotel": None
 }
 
@@ -62,13 +61,7 @@ def comprobar_usuario():
         usuario_activo["password"] = usuario.password
 
         if reserva["vuelo"] and not buscar_alojamiento:
-            return render_template("reserva.html",
-                           correo_electronico = usuario_activo["correo"],
-                           vuelo = reserva["vuelo"].origen + " -> " + reserva["vuelo"].destino,
-                           hora_salida = reserva["vuelo"].horaSalida,
-                           hora_llegada = reserva["vuelo"].horaLlegada,
-                           precio = reserva["vuelo"].precio
-            )
+            terminar_reserva("", 0)
         elif reserva["vuelo"] and buscar_alojamiento:
             return render_template("hoteles.html", hoteles=lista_hoteles, accion="Cerrar sesión", metodo_accion="cerrar_sesion")
 
@@ -103,19 +96,32 @@ def insertar_usuario():
         db.session.commit()
 
         if reserva["vuelo"] and not buscar_alojamiento:
-            return render_template("reserva.html",
+            terminar_reserva("", 0)
+        elif reserva["vuelo"] and buscar_alojamiento:
+            return render_template("hoteles.html", hoteles=lista_hoteles, accion="Cerrar sesión", metodo_accion="cerrar_sesion")
+
+        return render_template("index.html", accion="Cerrar sesión", metodo_accion="cerrar_sesion")
+
+    return render_template("registro.html", error="El usuario ya está registrado")
+
+@app.route("/reservar/confirmar", methods=["GET"])
+def terminar_reserva(hotel, precio_hotel): # TODO: Resolver este error TypeError: terminar_reserva() missing 2 required positional arguments: 'hotel' and 'precio_hotel'
+    precio_reserva = reserva["vuelo"].precio
+    ocultar_etiquetas = True
+
+    if hotel != "":
+        precio_reserva = reserva["vuelo"].precio + precio_hotel
+        ocultar_etiquetas = False
+
+    return render_template("reserva.html",
                            correo_electronico = usuario_activo["correo"],
                            vuelo = reserva["vuelo"].origen + " -> " + reserva["vuelo"].destino,
                            hora_salida = reserva["vuelo"].horaSalida,
                            hora_llegada = reserva["vuelo"].horaLlegada,
-                           precio = reserva["vuelo"].precio
+                           nombre_hotel = hotel,
+                           precio = precio_reserva,
+                           ocultar_etiquetas=ocultar_etiquetas
             )
-        elif reserva["vuelo"] and buscar_alojamiento:
-            return render_template("hoteles.html", hoteles=lista_hoteles, accion="Cerrar sesión", metodo_accion="cerrar_sesion")
-        
-        return render_template("index.html", accion="Cerrar sesión", metodo_accion="cerrar_sesion")
-
-    return render_template("registro.html", error="El usuario ya está registrado")
 
 @app.route("/busqueda/vuelos", methods=["GET", "POST"])
 def buscar_vuelo():
@@ -169,22 +175,14 @@ def buscar_vuelo():
 def reservar_vuelo(numero_vuelo):
     reserva["vuelo"] = lista_vuelos[numero_vuelo - 1]
 
-    buscar_hoteles()
-
     if not usuario_activo["correo"]:
         return render_template("login.html")
 
     if buscar_alojamiento:
+        buscar_hoteles()
         return render_template("hoteles.html", hoteles=lista_hoteles, accion="Cerrar sesión", metodo_accion="cerrar_sesion")
 
-    return render_template("reserva.html",
-                           correo_electronico = usuario_activo["correo"],
-                           vuelo = reserva["vuelo"].origen + " -> " + reserva["vuelo"].destino,
-                           hora_salida = reserva["vuelo"].horaSalida,
-                           hora_llegada = reserva["vuelo"].horaLlegada,
-                           precio = reserva["vuelo"].precio
-    )
-
+    terminar_reserva("", 0)
 
 
 @app.route("/reservar/<int:numero_vuelo>", methods=["GET", "POST"])
