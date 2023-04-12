@@ -27,7 +27,6 @@ class busqueda_hoteles():
         try:
             response = amadeus.reference_data.locations.hotels.by_city.get(
                 cityCode = 'BCN',
-                radius = 10
             )
 
             for i in range(0, len(response.data)):

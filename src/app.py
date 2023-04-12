@@ -13,17 +13,9 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 db = SQLAlchemy(app)
 
 amadeus = Client(
-    client_id='H8Ci5KBBxNg7dGQ5gScDxk6feM8IGYwd',
-    client_secret='Oe9kxiuyw6ORXZVW'
+    client_id='36eTUH6WOGQlrOkjeKr4K8QOVXNJe0iu',
+    client_secret='yI0mSUcRFgkLlaGs'
     )
-
-global destinationLocationCode
-global pasajerosTotal
-global adults
-global children
-global infants
-global departureDate
-
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key = True)
@@ -38,6 +30,13 @@ usuario_activo = {
     "nombre_usuario": None,
     "password": None
 }
+reserva = {
+    "vuelo": None,
+    "usuario": None,
+    "hotel": None
+}
+pasajeros_total = None
+fecha_llegada = None
 
 @app.route("/")
 def home():
@@ -59,7 +58,10 @@ def comprobar_usuario():
         usuario_activo["correo"] = usuario.email
         usuario_activo["nombre_usuario"] = usuario.username
         usuario_activo["password"] = usuario.password
-        print(usuario_activo)
+
+        if reserva["vuelo"]:
+            return render_template("hoteles.html", hoteles=lista_hoteles, accion="Cerrar sesión", metodo_accion="cerrar_sesion")
+
         return render_template("index.html", accion="Cerrar sesión", metodo_accion="cerrar_sesion")
 
 @app.route("/cerrar_sesion")
@@ -67,6 +69,7 @@ def cerrar_sesion():
     usuario_activo["correo"] = None
     usuario_activo["nombre_usuario"] = None
     usuario_activo["password"] = None
+    reserva["vuelo"] = None
     return render_template("index.html", accion="Iniciar sesión", metodo_accion="iniciar_sesion")
 
 @app.route("/registro")
@@ -88,11 +91,15 @@ def insertar_usuario():
         usuario_activo["password"] = usuario_registrado.password
         db.session.add(usuario)
         db.session.commit()
+
+        if reserva["vuelo"]:
+            return render_template("index.html", accion="Cerrar sesión", metodo_accion="cerrar_sesion")
+
         return render_template("index.html", accion="Cerrar sesión", metodo_accion="cerrar_sesion")
 
     return render_template("registro.html", error="El usuario ya está registrado")
 
-@app.route("/busqueda", methods=["GET", "POST"])
+@app.route("/busqueda/vuelos", methods=["GET", "POST"])
 def buscar_vuelo():
     parada = request.form.get("checkVueloDirecto")
     if parada == "on":
@@ -110,10 +117,12 @@ def buscar_vuelo():
             infants=str(request.form["inputBebes"]),
             nonStop=parada
         )
+
     except ResponseError as error_msg:
         print(error_msg)
 
-    pasajerosTotal = int(request.form["inputAdultos"]) + int(request.form["inputNiños"]) + int(request.form["inputBebes"])
+    # Aqui va la asignacio de los pasajeros y la fecha de llegada
+
     lista_vuelos.clear()
 
     for i in range(len(response.data) - 1):
@@ -129,10 +138,11 @@ def buscar_vuelo():
             precio = response.data[i]['price']['total'],
             asientosDisponibles = response.data[i]['numberOfBookableSeats']
         )
-        if pasajerosTotal > vuelo.asientosDisponibles:
-            continue
-        else:
-            lista_vuelos.append(vuelo)
+
+        #if pasajeros_total > vuelo.asientosDisponibles:
+        #    continue
+        #else:
+        lista_vuelos.append(vuelo)
 
         # TODO: Encontrar la forma de que si se ha hecho una busqueda y se hace un render_template de index.html no se borre la busqueda
 
@@ -143,47 +153,51 @@ def buscar_vuelo():
 
 @app.route("/reservar/<int:numero_vuelo>")
 def reservar_vuelo(numero_vuelo):
+    reserva["vuelo"] = lista_vuelos[numero_vuelo - 1]
+
+    buscar_hoteles()
+
     if not usuario_activo["correo"]:
-        print("no hay usuario")
-    vuelo = lista_vuelos[numero_vuelo - 1]
-    return render_template("hoteles.html", accion="Reservar", metodo_accion="buscar_hoteles")
+        return render_template("login.html")
+
+    return render_template("hoteles.html", hoteles=lista_hoteles, accion="Cerrar sesión", metodo_accion="cerrar_sesion")
 
 
-@app.route("/busqueda", methods=["GET", "POST"])
+@app.route("/reservar/<int:numero_vuelo>", methods=["GET", "POST"])
 def buscar_hoteles():
-    lista = []
+    hoteles_ciudad = []
     try:
-        response_code = amadeus.reference_data.locations.hotels.by_city.get(
-            cityCode = destinationLocationCode,
-            radius = 10
+        response = amadeus.reference_data.locations.hotels.by_city.get(
+            cityCode = reserva["vuelo"].destino,
         )
 
-        for i in range(0, len(response_code.data)):
-            lista.append(response_code.data[i]['hotelId'])
+        for i in range(0, len(response.data)):
+            hoteles_ciudad.append(response.data[i]['hotelId'])
 
         response_ids = amadeus.shopping.hotel_offers_search.get(
-            hotelIds = lista,
-            adults = 3
+            hotelIds = hoteles_ciudad,
+            checkInDate = str(reserva["vuelo"].fecha),
+            checkOutDate = str(fecha_llegada),
+            adults = int(pasajeros_total) # TODO: Mirar porque los pasajeros se quedan a None
         )
+
+        for i in range(len(response_ids.data) - 1):
+            hotel = Hotel(
+                id = response_ids.data[i]['hotelId'],
+                nombre = response_ids.data[i]['name'],
+                ubicacion= response_ids.data[i]['address']['cityName'],
+                estrellas = response_ids.data[i]["offers"][0]["hotel"]["rating"],
+                precio = response_ids.data[i]["offers"][0]["price"]["total"],
+                fechaSalida = response_ids.data[i]["offers"][0]["price"]["checkOutDate"],
+                fechaEntrada = response_ids.data[i]["offers"][0]["price"]["checkInDate"],
+                disponibilidad= response_ids.data[i]["offers"][0]["available"]
+            )
+
+            lista_hoteles.append(hotel)
 
     except ResponseError as error_msg:
         print(error_msg)
 
-    for i in range(len(response_ids.data) - 1):
-        hotel = Hotel(
-            id = response_ids.data[i]['hotelId'],
-            nombre = response_ids.data[i]['name'],
-            ubicacion= response_ids.data[i]['address']['cityName'],
-            estrellas = response_ids.data[i]["offers"][0]["hotel"]["rating"],
-            precio = response_ids.data[i]["offers"][0]["price"]["total"],
-            fechaSalida = response_ids.data[i]["offers"][0]["price"]["checkOutDate"],
-            fechaEntrada = response_ids.data[i]["offers"][0]["price"]["checkInDate"],
-            disponibilidad= response_ids.data[i]["offers"][0]["available"]
-        )
-
-        lista_hoteles.append(hotel)
-
-    # TODO: Seguir con los hoteles
 
 
 if __name__ == "__main__":
