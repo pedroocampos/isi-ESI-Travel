@@ -38,6 +38,7 @@ reserva = {
 }
 
 pasajeros_total = None
+presupuestoMax = None
 fecha_llegada = None
 buscar_alojamiento = True
 buscar_vuelta = True
@@ -114,11 +115,11 @@ def terminar_reserva(hotel, precio_hotel):
     precio_reserva = float(reserva["vuelo_ida"].precio)
     ocultar_etiquetas = True
     ocultar_vuelta = True
-        
+
     if hotel != "":
         precio_reserva = float(reserva["vuelo_ida"].precio) + float(precio_hotel)
         ocultar_etiquetas = False
-    
+
     if reserva["vuelo_vuelta"] != None:
         precio_reserva += float(reserva["vuelo_vuelta"].precio)
         ocultar_vuelta = False
@@ -145,7 +146,7 @@ def terminar_reserva(hotel, precio_hotel):
                         ocultar_vuelta = ocultar_vuelta,
                         ocultar_etiquetas = ocultar_etiquetas
         )
-    
+
 
 @app.route("/busqueda/vuelos", methods=["GET", "POST"])
 def buscar_vuelo():
@@ -153,13 +154,13 @@ def buscar_vuelo():
     parada = request.form.get("checkBuscarAlojamiento")
     vuelta = request.form.get("checkVuelta")
     buscar_vuelta = True
-    
+
     if parada != "on":
         buscar_alojamiento = False
 
     if vuelta != "on":
         buscar_vuelta = False
-        
+
     try:
         response = amadeus.shopping.flight_offers_search.get(
             originLocationCode=str(request.form["inputOrigen"]),
@@ -174,9 +175,10 @@ def buscar_vuelo():
     except ResponseError as error_msg:
         print(error_msg)
 
-    global pasajeros_total, fecha_llegada
+    global pasajeros_total, fecha_llegada, presupuestoMax
     pasajeros_total = int(request.form["inputAdultos"]) + int(request.form["inputNiños"]) + int(request.form["inputBebes"])
     fecha_llegada = str(request.form.get("inputFechaLlegada"))
+    presupuestoMax = float(request.form["inputDinero"]) * pasajeros_total
 
     lista_vuelos.clear()
 
@@ -225,8 +227,8 @@ def buscar_vuelo():
                 asientosDisponibles = response.data[i]['numberOfBookableSeats']
             )
             vuelos_vuelta.append(vuelo)
-            
-    
+
+
     if not usuario_activo["correo"]:
         return render_template("index.html", vuelos=lista_vuelos, vuelos_vuelta=vuelos_vuelta, accion="Iniciar sesión", metodo_accion="iniciar_sesion")
 
@@ -234,12 +236,18 @@ def buscar_vuelo():
 
 @app.route("/reservar/<int:numero_vuelo>")
 def reservar_vuelo(numero_vuelo):
-    global buscar_alojamiento, lista_hoteles
+    global buscar_alojamiento, lista_hoteles, presupuestoMax, pasajeros_total
+    print(pasajeros_total)
+    print(presupuestoMax)
     reserva["vuelo_ida"] = lista_vuelos[numero_vuelo - 1]
-    
+    print((float(reserva["vuelo_ida"].precio)))
+    presupuestoMax = presupuestoMax - (float(reserva["vuelo_ida"].precio))   #TODO: NO SE SI EL PASAJERO TOTAL ES NECESARIO, NO SE SI EL PRECIO SERA POR PERSONA O EN TOTAL
+    print(presupuestoMax)
+
     if buscar_vuelta == True:
         reserva["vuelo_vuelta"] = vuelos_vuelta[numero_vuelo - 1]
-        
+        presupuestoMax = presupuestoMax - (float(reserva["vuelo_vuelta"].precio))
+
     buscar_hoteles()
 
     if not usuario_activo["correo"]:
@@ -256,7 +264,7 @@ def reservar_vuelo(numero_vuelo):
 @app.route("/reservar/<int:numero_vuelo>", methods=["GET", "POST"])
 def buscar_hoteles():
     hoteles_ciudad = []
-    global lista_hoteles, pasajeros_total, fecha_llegada
+    global lista_hoteles, pasajeros_total, fecha_llegada, presupuestoMax
 
     try:
         response = amadeus.reference_data.locations.hotels.by_city.get(
@@ -281,7 +289,9 @@ def buscar_hoteles():
                 fechaSalida = response_ids.data[i]["offers"][0]["checkOutDate"],
                 fechaEntrada = response_ids.data[i]["offers"][0]["checkInDate"],
             )
-            lista_hoteles.append(hotel)
+            if float(hotel.precio) <= presupuestoMax:
+                lista_hoteles.append(hotel)
+
     except ResponseError as error_msg:
         print(error_msg)
 
