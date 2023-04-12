@@ -4,6 +4,7 @@ from vuelo import Vuelo, busqueda_vuelos
 def main():
     bh = busqueda_hoteles()
     lista = bh.busqueda()
+
     hotel = Hotel(
         id = lista[0]['hotel']['hotelId'],
         nombre = lista[0]['hotel']['name'],

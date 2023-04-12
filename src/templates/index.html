@@ -149,7 +149,10 @@
                     {% for vuelo in vuelos %}
                         <tr>
                             <td>{{ vuelo.id }}</td>
-                            <td>{{ vuelo.origen }}</td>
+                            <td>
+                                {{ vuelo.origen }}<br>
+                                {{ vuelo. destino }}
+                            </td>
                             <td>{{ vuelo.destino }}</td>
                             <td>{{ vuelo.precio }}</td>
                             <td>{{ vuelo.horaSalida }}</td>

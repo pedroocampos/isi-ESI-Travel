@@ -35,6 +35,7 @@ reserva = {
     "usuario": None,
     "hotel": None
 }
+
 pasajeros_total = None
 fecha_llegada = None
 
@@ -121,7 +122,9 @@ def buscar_vuelo():
     except ResponseError as error_msg:
         print(error_msg)
 
-    # Aqui va la asignacio de los pasajeros y la fecha de llegada
+    global pasajeros_total, fecha_llegada
+    pasajeros_total = int(request.form["inputAdultos"]) + int(request.form["inputNiños"]) + int(request.form["inputBebes"])
+    fecha_llegada = str(request.form.get("inputFechaLlegada"))
 
     lista_vuelos.clear()
 
@@ -144,8 +147,6 @@ def buscar_vuelo():
         #else:
         lista_vuelos.append(vuelo)
 
-        # TODO: Encontrar la forma de que si se ha hecho una busqueda y se hace un render_template de index.html no se borre la busqueda
-
     if not usuario_activo["correo"]:
         return render_template("index.html", vuelos=lista_vuelos, accion="Iniciar sesión", metodo_accion="iniciar_sesion")
 
@@ -166,35 +167,33 @@ def reservar_vuelo(numero_vuelo):
 @app.route("/reservar/<int:numero_vuelo>", methods=["GET", "POST"])
 def buscar_hoteles():
     hoteles_ciudad = []
+    global pasajeros_total, fecha_llegada
+
     try:
         response = amadeus.reference_data.locations.hotels.by_city.get(
             cityCode = reserva["vuelo"].destino,
         )
 
-        for i in range(0, len(response.data)):
+        for i in range(0, len(response.data) - 1):
             hoteles_ciudad.append(response.data[i]['hotelId'])
 
         response_ids = amadeus.shopping.hotel_offers_search.get(
             hotelIds = hoteles_ciudad,
             checkInDate = str(reserva["vuelo"].fecha),
             checkOutDate = str(fecha_llegada),
-            adults = int(pasajeros_total) # TODO: Mirar porque los pasajeros se quedan a None
+            adults = pasajeros_total
         )
 
         for i in range(len(response_ids.data) - 1):
             hotel = Hotel(
-                id = response_ids.data[i]['hotelId'],
-                nombre = response_ids.data[i]['name'],
-                ubicacion= response_ids.data[i]['address']['cityName'],
-                estrellas = response_ids.data[i]["offers"][0]["hotel"]["rating"],
+                id = response_ids.data[i]["hotel"]['hotelId'],
+                nombre = response_ids.data[i]["hotel"]['name'],
                 precio = response_ids.data[i]["offers"][0]["price"]["total"],
-                fechaSalida = response_ids.data[i]["offers"][0]["price"]["checkOutDate"],
-                fechaEntrada = response_ids.data[i]["offers"][0]["price"]["checkInDate"],
-                disponibilidad= response_ids.data[i]["offers"][0]["available"]
+                fechaSalida = response_ids.data[i]["offers"][0]["checkOutDate"],
+                fechaEntrada = response_ids.data[i]["offers"][0]["checkInDate"],
             )
 
             lista_hoteles.append(hotel)
-
     except ResponseError as error_msg:
         print(error_msg)
 

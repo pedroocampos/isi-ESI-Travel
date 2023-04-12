@@ -35,11 +35,8 @@
             <table class="table">
                 <thead>
                     <tr>
-                        <th scope="col">#</th>
                         <th scope="col">Nombre</th>
-                        <th scope="col">Ubicación</th>
                         <th scope="col">Precio</th>
-                        <th scope="col">Número de estrellas</th>
                         <th scope="col">Fecha Entrada</th>
                         <th scope="col">Fecha Salida</th>
                     </tr>
@@ -47,15 +44,12 @@
                 <tbody class="table-group-divider">
                     {% for hotel in hoteles %}
                         <tr>
-                            <td>{{ hotel.id }}</td>
                             <td>{{ hotel.nombre }}</td>
-                            <td>{{ hotel.ubicacion }}</td>
                             <td>{{ hotel.precio }}</td>
-                            <td>{{ hotel.estrellas }}</td>
                             <td>{{ hotel.fechaEntrada }}</td>
                             <td>{{ hotel.fechaSalida }}</td>
                             <td>
-                                <td><a href="{{ url_for('reservar_hotel', numero_hotel=hotel.id) }}" class="btn btn-outline-light btn-dark">Reservar</a></td>
+                                <td><a href="#" class="btn btn-outline-light btn-dark">Reservar</a></td>
                             </td>
                         </tr>
                     {% endfor %}
