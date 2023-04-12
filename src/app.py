@@ -109,14 +109,14 @@ def insertar_usuario():
 
     return render_template("registro.html", error="El usuario ya está registrado")
 
-@app.route("/reservar/confirmar", methods=["GET"])
-def terminar_reserva(hotel, precio_hotel): # TODO: Resolver este error TypeError: terminar_reserva() missing 2 required positional arguments: 'hotel' and 'precio_hotel'
+@app.route("/reservar/confirmar/<hotel>/<precio_hotel>", methods=["GET"])
+def terminar_reserva(hotel, precio_hotel):
     precio_reserva = float(reserva["vuelo_ida"].precio)
     ocultar_etiquetas = True
     ocultar_vuelta = True
         
     if hotel != "":
-        precio_reserva = reserva["vuelo_ida"].precio + precio_hotel
+        precio_reserva = float(reserva["vuelo_ida"].precio) + float(precio_hotel)
         ocultar_etiquetas = False
     
     if reserva["vuelo_vuelta"] != None:

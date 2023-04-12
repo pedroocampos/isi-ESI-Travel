@@ -20,20 +20,20 @@
         <span><strong>Vuelo ida: </strong> {{ vuelo_ida }}</span><br>
         <span><strong>Hora de salida: </strong> {{ hora_salida_ida }} </span><br>
         <span><strong>Hora de llegada: </strong> {{ hora_llegada_ida }} </span><br>
-        {% if ocultar_vuelta %}
+        {% if not ocultar_vuelta %}
         <style>
             .vuelta_oculta {
-                display: none;
+                display: block;
             }
         </style>
         {% endif %}
-        <span class="vuelta_oculta"><strong>Vuelo vuelta: </strong> {{ vuelo_vuelta }}</span><br>
-        <span class="vuelta_oculta"><strong>Hora de salida: </strong> {{ hora_salida_vuelta }} </span><br>
-        <span class="vuelta_oculta"><strong>Hora de llegada: </strong> {{ hora_llegada_vuelta }} </span><br>
-        {% if ocultar_etiquetas %}
+        <span class="vuelta_oculta"><strong>Vuelo vuelta: </strong> {{ vuelo_vuelta }}</span>
+        <span class="vuelta_oculta"><strong>Hora de salida: </strong> {{ hora_salida_vuelta }} </span>
+        <span class="vuelta_oculta"><strong>Hora de llegada: </strong> {{ hora_llegada_vuelta }} </span>
+        {% if not ocultar_etiquetas %}
         <style>
             .oculta {
-                display: none;
+                display: block;
             }
         </style>
         {% endif %}
