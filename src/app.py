@@ -121,9 +121,16 @@ def insertar_usuario():
 def buscar_vuelo():
     global buscar_alojamiento
     parada = request.form.get("checkBuscarAlojamiento")
+    vuelta = request.form.get("checkVuelta")
+    buscar_vuelta = True
+    vuelos_vuelta = []
+    
     if parada != "on":
         buscar_alojamiento = False
 
+    if vuelta != "on":
+        buscar_vuelta = False
+        
     try:
         response = amadeus.shopping.flight_offers_search.get(
             originLocationCode=str(request.form["inputOrigen"]),
@@ -160,8 +167,39 @@ def buscar_vuelo():
 
         lista_vuelos.append(vuelo)
 
+    if buscar_vuelta:
+        try:
+            response = amadeus.shopping.flight_offers_search.get(
+                originLocationCode=str(request.form["inputDestino"]),
+                destinationLocationCode=str(request.form["inputOrigen"]),
+                departureDate=str(request.form.get("inputFechaLlegada")),
+                adults=str(request.form["inputAdultos"]),
+                children=str(request.form["inputNiños"]),
+                infants=str(request.form["inputBebes"]),
+                nonStop="true"
+            )
+
+        except ResponseError as error_msg:
+            print(error_msg)
+
+        for i in range(len(response.data) - 1):
+            vuelo = Vuelo(
+                id = response.data[i]['id'],
+                origen = response.data[i]['itineraries'][0]['segments'][0]['departure']['iataCode'],
+                destino = response.data[i]['itineraries'][0]['segments'][0]['arrival']['iataCode'],
+                fecha = response.data[i]['itineraries'][0]['segments'][0]['departure']['at'][0:10],
+                horaSalida = response.data[i]['itineraries'][0]['segments'][0]['departure']['at'][11:16],
+                horaLlegada = response.data[i]['itineraries'][0]['segments'][0]['arrival']['at'][11:16],
+                compania = response.data[i]['itineraries'][0]['segments'][0]['carrierCode'],
+                paradas = response.data[i]['itineraries'][0]['segments'][0]['numberOfStops'],
+                precio = response.data[i]['price']['total'],
+                asientosDisponibles = response.data[i]['numberOfBookableSeats']
+            )
+            vuelos_vuelta.append(vuelo)
+            
+    
     if not usuario_activo["correo"]:
-        return render_template("index.html", vuelos=lista_vuelos, accion="Iniciar sesión", metodo_accion="iniciar_sesion")
+        return render_template("index.html", vuelos=lista_vuelos, vuelos_vuelta=vuelos_vuelta, accion="Iniciar sesión", metodo_accion="iniciar_sesion")
 
     return render_template("index.html", vuelos=lista_vuelos, accion="Cerrar sesión", metodo_accion="cerrar_sesion")
 

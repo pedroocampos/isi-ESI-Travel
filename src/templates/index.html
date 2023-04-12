@@ -125,6 +125,10 @@
                         <label class="form-check-label text-white" for="flexSwitchCheckChecked">Buscar alojamiento</label><br>
                         <span class="text-white" style="font-size: 13px;">Recuerda ajustar tu presupuesto</span>
                     </div>
+                    <div class="form-check form-switch ms-4">
+                        <input class="form-check-input" type="checkbox" role="switch" name="checkVuelta" checked>
+                        <label class="form-check-label text-white" for="flexSwitchCheckChecked">Buscar vuelo de vuelta</label><br>
+                    </div>
                 </div>
 
                 <span class="mensaje-error"><b>{{ error }}</b></span>
@@ -150,12 +154,30 @@
                     {% for vuelo in vuelos %}
                         <tr>
                             <td>{{ vuelo.id }}</td>
-                            <td>{{ vuelo.origen }}</td>
-                            <td>{{ vuelo.destino }}</td>
-                            <td>{{ vuelo.precio }}</td>
-                            <td>{{ vuelo.horaSalida }}</td>
-                            <td>{{ vuelo.horaLlegada }}</td>
-                            <td>{{ vuelo.asientosDisponibles }}</td>
+                            <td>{{ vuelo.origen }}
+                                <br>
+                                {{ vuelos_vuelta[loop.index-1].origen }}
+                            </td>
+                            <td>{{ vuelo.destino }}
+                                <br>
+                                {{ vuelos_vuelta[loop.index-1].destino }}
+                            </td>
+                            <td>{{ vuelo.precio }}
+                                <br>
+                                {{ vuelos_vuelta[loop.index-1].precio }}
+                            </td>
+                            <td>{{ vuelo.horaSalida }}
+                                <br>
+                                {{ vuelos_vuelta[loop.index-1].horaSalida }}
+                            </td>
+                            <td>{{ vuelo.horaLlegada }}
+                                <br>
+                                {{ vuelos_vuelta[loop.index-1].horaLlegada }}
+                            </td>
+                            <td>{{ vuelo.asientosDisponibles }}
+                                <br>
+                                {{ vuelos_vuelta[loop.index-1].asientosDisponibles }}
+                            </td>
                             <td>
                                 <td><a href="{{ url_for('reservar_vuelo', numero_vuelo=vuelo.id) }}" class="btn btn-outline-light btn-dark">Reservar</a></td>
                             </td>
