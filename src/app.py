@@ -211,13 +211,16 @@ def buscar_vuelo():
 
 @app.route("/reservar/<int:numero_vuelo>")
 def reservar_vuelo(numero_vuelo):
+    global buscar_alojamiento, lista_hoteles
     reserva["vuelo"] = lista_vuelos[numero_vuelo - 1]
+
+    buscar_hoteles()
 
     if not usuario_activo["correo"]:
         return render_template("login.html")
 
     if buscar_alojamiento:
-        buscar_hoteles()
+        print("Buscando hoteles...")
         return render_template("hoteles.html", hoteles=lista_hoteles, accion="Cerrar sesión", metodo_accion="cerrar_sesion")
 
     terminar_reserva("", 0)
@@ -226,7 +229,7 @@ def reservar_vuelo(numero_vuelo):
 @app.route("/reservar/<int:numero_vuelo>", methods=["GET", "POST"])
 def buscar_hoteles():
     hoteles_ciudad = []
-    global pasajeros_total, fecha_llegada
+    global lista_hoteles, pasajeros_total, fecha_llegada
 
     try:
         response = amadeus.reference_data.locations.hotels.by_city.get(
@@ -251,7 +254,6 @@ def buscar_hoteles():
                 fechaSalida = response_ids.data[i]["offers"][0]["checkOutDate"],
                 fechaEntrada = response_ids.data[i]["offers"][0]["checkInDate"],
             )
-
             lista_hoteles.append(hotel)
     except ResponseError as error_msg:
         print(error_msg)

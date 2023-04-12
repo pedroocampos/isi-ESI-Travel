@@ -9,7 +9,7 @@ class Hotel():
         self.fechaEntrada = fechaEntrada
 
     def __str__(self):
-        return "ID: " + self.id + "\nNombre: " + self.nombre + "\nUbicacion: " + self.ubicacion + "\nEstrellas: " + str(self.estrellas) + "\nPrecio: " + str(self.precio) + "\nFecha de salida: " + self.fechaSalida + "\nFecha de entrada: " + self.fechaEntrada + "\nDisponibilidad: " + str(self.disponibilidad)
+        return "ID: " + self.id + "\nNombre: " + self.nombre + "\nUbicacion: " + "\nEstrellas: " + str(self.estrellas) + "\nPrecio: " + str(self.precio) + "\nFecha de salida: " + self.fechaSalida + "\nFecha de entrada: " + self.fechaEntrada
 
 class busqueda_hoteles():
     def __init__(self):
