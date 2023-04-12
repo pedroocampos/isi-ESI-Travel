@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, make_response
 from flask_sqlalchemy import SQLAlchemy
 from amadeus import Client, ResponseError
 from vuelo import Vuelo
@@ -24,6 +24,7 @@ class User(db.Model):
     email = db.Column(db.String(100))
 
 lista_vuelos = []
+vuelos_vuelta = []
 lista_hoteles = []
 usuario_activo = {
     "correo": None,
@@ -31,13 +32,15 @@ usuario_activo = {
     "password": None
 }
 reserva = {
-    "vuelo": None,
+    "vuelo_ida": None,
+    "vuelo_vuelta": None,
     "hotel": None
 }
 
 pasajeros_total = None
 fecha_llegada = None
 buscar_alojamiento = True
+buscar_vuelta = True
 
 @app.route("/")
 def home():
@@ -60,9 +63,9 @@ def comprobar_usuario():
         usuario_activo["nombre_usuario"] = usuario.username
         usuario_activo["password"] = usuario.password
 
-        if reserva["vuelo"] and not buscar_alojamiento:
-            terminar_reserva("", 0)
-        elif reserva["vuelo"] and buscar_alojamiento:
+        if reserva["vuelo_ida"] and not buscar_alojamiento:
+            terminar_reserva(hotel="", precio_hotel=0)
+        elif reserva["vuelo_ida"] and buscar_alojamiento:
             return render_template("hoteles.html", hoteles=lista_hoteles, accion="Cerrar sesión", metodo_accion="cerrar_sesion")
 
         return render_template("index.html", accion="Cerrar sesión", metodo_accion="cerrar_sesion")
@@ -72,7 +75,9 @@ def cerrar_sesion():
     usuario_activo["correo"] = None
     usuario_activo["nombre_usuario"] = None
     usuario_activo["password"] = None
-    reserva["vuelo"] = None
+    reserva["vuelo_ida"] = None
+    reserva["vuelo_vuelta"] = None
+    reserva["hotel"] = None
     return render_template("index.html", accion="Iniciar sesión", metodo_accion="iniciar_sesion")
 
 @app.route("/registro")
@@ -95,9 +100,9 @@ def insertar_usuario():
         db.session.add(usuario)
         db.session.commit()
 
-        if reserva["vuelo"] and not buscar_alojamiento:
-            terminar_reserva("", 0)
-        elif reserva["vuelo"] and buscar_alojamiento:
+        if reserva["vuelo_ida"] and not buscar_alojamiento:
+            terminar_reserva(hotel="", precio_hotel=0)
+        elif reserva["vuelo_ida"] and buscar_alojamiento:
             return render_template("hoteles.html", hoteles=lista_hoteles, accion="Cerrar sesión", metodo_accion="cerrar_sesion")
 
         return render_template("index.html", accion="Cerrar sesión", metodo_accion="cerrar_sesion")
@@ -106,30 +111,38 @@ def insertar_usuario():
 
 @app.route("/reservar/confirmar", methods=["GET"])
 def terminar_reserva(hotel, precio_hotel): # TODO: Resolver este error TypeError: terminar_reserva() missing 2 required positional arguments: 'hotel' and 'precio_hotel'
-    precio_reserva = reserva["vuelo"].precio
+    precio_reserva = float(reserva["vuelo_ida"].precio)
     ocultar_etiquetas = True
-
+    ocultar_vuelta = True
+    
+    if reserva["vuelo_vuelta"] != None:
+        precio_reserva += float(reserva["vuelo_vuelta"].precio)
+        ocultar_vuelta = False
+        
     if hotel != "":
-        precio_reserva = reserva["vuelo"].precio + precio_hotel
+        precio_reserva = reserva["vuelo_ida"].precio + precio_hotel
         ocultar_etiquetas = False
 
     return render_template("reserva.html",
                            correo_electronico = usuario_activo["correo"],
-                           vuelo = reserva["vuelo"].origen + " -> " + reserva["vuelo"].destino,
-                           hora_salida = reserva["vuelo"].horaSalida,
-                           hora_llegada = reserva["vuelo"].horaLlegada,
+                           vuelo_ida = reserva["vuelo_ida"].origen + " -> " + reserva["vuelo_ida"].destino,
+                           hora_salida_ida = reserva["vuelo_ida"].horaSalida,
+                           hora_llegada_ida = reserva["vuelo_ida"].horaLlegada,
+                           vuelo_vuelta = reserva["vuelo_vuelta"].origen + " -> " + reserva["vuelo_vuelta"].destino,
+                           hora_salida_vuelta = reserva["vuelo_vuelta"].horaSalida,
+                           hora_llegada_vuelta = reserva["vuelo_vuelta"].horaLlegada,
                            nombre_hotel = hotel,
                            precio = precio_reserva,
-                           ocultar_etiquetas=ocultar_etiquetas
+                           ocultar_vuelta = ocultar_vuelta,
+                           ocultar_etiquetas = ocultar_etiquetas
             )
 
 @app.route("/busqueda/vuelos", methods=["GET", "POST"])
 def buscar_vuelo():
-    global buscar_alojamiento
+    global buscar_alojamiento, buscar_vuelta
     parada = request.form.get("checkBuscarAlojamiento")
     vuelta = request.form.get("checkVuelta")
     buscar_vuelta = True
-    vuelos_vuelta = []
     
     if parada != "on":
         buscar_alojamiento = False
@@ -207,13 +220,16 @@ def buscar_vuelo():
     if not usuario_activo["correo"]:
         return render_template("index.html", vuelos=lista_vuelos, vuelos_vuelta=vuelos_vuelta, accion="Iniciar sesión", metodo_accion="iniciar_sesion")
 
-    return render_template("index.html", vuelos=lista_vuelos, accion="Cerrar sesión", metodo_accion="cerrar_sesion")
+    return render_template("index.html", vuelos=lista_vuelos, vuelos_vuelta=vuelos_vuelta, accion="Cerrar sesión", metodo_accion="cerrar_sesion")
 
 @app.route("/reservar/<int:numero_vuelo>")
 def reservar_vuelo(numero_vuelo):
     global buscar_alojamiento, lista_hoteles
-    reserva["vuelo"] = lista_vuelos[numero_vuelo - 1]
-
+    reserva["vuelo_ida"] = lista_vuelos[numero_vuelo - 1]
+    
+    if buscar_vuelta == True:
+        reserva["vuelo_vuelta"] = vuelos_vuelta[numero_vuelo - 1]
+        
     buscar_hoteles()
 
     if not usuario_activo["correo"]:
@@ -223,7 +239,7 @@ def reservar_vuelo(numero_vuelo):
         print("Buscando hoteles...")
         return render_template("hoteles.html", hoteles=lista_hoteles, accion="Cerrar sesión", metodo_accion="cerrar_sesion")
 
-    terminar_reserva("", 0)
+    return(terminar_reserva(hotel="", precio_hotel=0))
 
 
 @app.route("/reservar/<int:numero_vuelo>", methods=["GET", "POST"])
@@ -233,7 +249,7 @@ def buscar_hoteles():
 
     try:
         response = amadeus.reference_data.locations.hotels.by_city.get(
-            cityCode = reserva["vuelo"].destino,
+            cityCode = reserva["vuelo_ida"].destino,
         )
 
         for i in range(0, len(response.data) - 1):
@@ -241,7 +257,7 @@ def buscar_hoteles():
 
         response_ids = amadeus.shopping.hotel_offers_search.get(
             hotelIds = hoteles_ciudad,
-            checkInDate = str(reserva["vuelo"].fecha),
+            checkInDate = str(reserva["vuelo_ida"].fecha),
             checkOutDate = str(fecha_llegada),
             adults = pasajeros_total
         )
