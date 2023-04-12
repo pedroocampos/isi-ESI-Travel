@@ -38,6 +38,7 @@ reserva = {
 
 pasajeros_total = None
 fecha_llegada = None
+buscar_alojamiento = True
 
 @app.route("/")
 def home():
@@ -60,7 +61,15 @@ def comprobar_usuario():
         usuario_activo["nombre_usuario"] = usuario.username
         usuario_activo["password"] = usuario.password
 
-        if reserva["vuelo"]:
+        if reserva["vuelo"] and not buscar_alojamiento:
+            return render_template("reserva.html",
+                           correo_electronico = usuario_activo["correo"],
+                           vuelo = reserva["vuelo"].origen + " -> " + reserva["vuelo"].destino,
+                           hora_salida = reserva["vuelo"].horaSalida,
+                           hora_llegada = reserva["vuelo"].horaLlegada,
+                           precio = reserva["vuelo"].precio
+            )
+        elif reserva["vuelo"] and buscar_alojamiento:
             return render_template("hoteles.html", hoteles=lista_hoteles, accion="Cerrar sesión", metodo_accion="cerrar_sesion")
 
         return render_template("index.html", accion="Cerrar sesión", metodo_accion="cerrar_sesion")
@@ -87,26 +96,33 @@ def insertar_usuario():
 
     usuario_registrado = User.query.filter(User.email == usuario.email, User.username == usuario.username, User.password == usuario.password).first()
     if not usuario_registrado:
-        usuario_activo["correo"] = usuario_registrado.email
-        usuario_activo["nombre_usuario"] = usuario_registrado.username
-        usuario_activo["password"] = usuario_registrado.password
+        usuario_activo["correo"] = usuario.email
+        usuario_activo["nombre_usuario"] = usuario.username
+        usuario_activo["password"] = usuario.password
         db.session.add(usuario)
         db.session.commit()
 
-        if reserva["vuelo"]:
-            return render_template("index.html", accion="Cerrar sesión", metodo_accion="cerrar_sesion")
-
+        if reserva["vuelo"] and not buscar_alojamiento:
+            return render_template("reserva.html",
+                           correo_electronico = usuario_activo["correo"],
+                           vuelo = reserva["vuelo"].origen + " -> " + reserva["vuelo"].destino,
+                           hora_salida = reserva["vuelo"].horaSalida,
+                           hora_llegada = reserva["vuelo"].horaLlegada,
+                           precio = reserva["vuelo"].precio
+            )
+        elif reserva["vuelo"] and buscar_alojamiento:
+            return render_template("hoteles.html", hoteles=lista_hoteles, accion="Cerrar sesión", metodo_accion="cerrar_sesion")
+        
         return render_template("index.html", accion="Cerrar sesión", metodo_accion="cerrar_sesion")
 
     return render_template("registro.html", error="El usuario ya está registrado")
 
 @app.route("/busqueda/vuelos", methods=["GET", "POST"])
 def buscar_vuelo():
-    parada = request.form.get("checkVueloDirecto")
-    if parada == "on":
-        parada = "true"
-    else:
-        parada = "false"
+    global buscar_alojamiento
+    parada = request.form.get("checkBuscarAlojamiento")
+    if parada != "on":
+        buscar_alojamiento = False
 
     try:
         response = amadeus.shopping.flight_offers_search.get(
@@ -116,7 +132,7 @@ def buscar_vuelo():
             adults=str(request.form["inputAdultos"]),
             children=str(request.form["inputNiños"]),
             infants=str(request.form["inputBebes"]),
-            nonStop=parada
+            nonStop="true"
         )
 
     except ResponseError as error_msg:
@@ -142,9 +158,6 @@ def buscar_vuelo():
             asientosDisponibles = response.data[i]['numberOfBookableSeats']
         )
 
-        #if pasajeros_total > vuelo.asientosDisponibles:
-        #    continue
-        #else:
         lista_vuelos.append(vuelo)
 
     if not usuario_activo["correo"]:
@@ -161,7 +174,17 @@ def reservar_vuelo(numero_vuelo):
     if not usuario_activo["correo"]:
         return render_template("login.html")
 
-    return render_template("hoteles.html", hoteles=lista_hoteles, accion="Cerrar sesión", metodo_accion="cerrar_sesion")
+    if buscar_alojamiento:
+        return render_template("hoteles.html", hoteles=lista_hoteles, accion="Cerrar sesión", metodo_accion="cerrar_sesion")
+
+    return render_template("reserva.html",
+                           correo_electronico = usuario_activo["correo"],
+                           vuelo = reserva["vuelo"].origen + " -> " + reserva["vuelo"].destino,
+                           hora_salida = reserva["vuelo"].horaSalida,
+                           hora_llegada = reserva["vuelo"].horaLlegada,
+                           precio = reserva["vuelo"].precio
+    )
+
 
 
 @app.route("/reservar/<int:numero_vuelo>", methods=["GET", "POST"])
