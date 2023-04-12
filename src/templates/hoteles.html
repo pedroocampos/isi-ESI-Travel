@@ -49,7 +49,7 @@
                             <td>{{ hotel.fechaEntrada }}</td>
                             <td>{{ hotel.fechaSalida }}</td>
                             <td>
-                                <td><a href="#" class="btn btn-outline-light btn-dark">Reservar</a></td>
+                                <td><a href="{{ url_for('terminar_reserva', hotel=hotel.nombre, precio_hotel=hotel.precio) }}" class="btn btn-outline-light btn-dark">Reservar</a></td>
                             </td>
                         </tr>
                     {% endfor %}
