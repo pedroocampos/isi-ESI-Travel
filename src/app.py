@@ -195,8 +195,8 @@ def buscar_vuelo():
             precio = response.data[i]['price']['total'],
             asientosDisponibles = response.data[i]['numberOfBookableSeats']
         )
-
-        lista_vuelos.append(vuelo)
+        if float(vuelo.precio) < presupuestoMax:
+            lista_vuelos.append(vuelo)
 
     if buscar_vuelta:
         try:
@@ -226,7 +226,8 @@ def buscar_vuelo():
                 precio = response.data[i]['price']['total'],
                 asientosDisponibles = response.data[i]['numberOfBookableSeats']
             )
-            vuelos_vuelta.append(vuelo)
+            if float(vuelo.precio) < presupuestoMax:
+                vuelos_vuelta.append(vuelo)
 
 
     if not usuario_activo["correo"]:
