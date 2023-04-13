@@ -181,6 +181,7 @@ def buscar_vuelo():
     presupuestoMax = float(request.form["inputDinero"]) * pasajeros_total
 
     lista_vuelos.clear()
+    vuelos_vuelta.clear()
 
     for i in range(len(response.data) - 1):
         vuelo = Vuelo(
@@ -228,8 +229,13 @@ def buscar_vuelo():
             )
             if float(vuelo.precio) < presupuestoMax:
                 vuelos_vuelta.append(vuelo)
+                
+        if not usuario_activo["correo"]:
+            return render_template("index.html", vuelos=lista_vuelos, vuelos_vuelta=vuelos_vuelta, accion="Iniciar sesión", metodo_accion="iniciar_sesion")
 
+        return render_template("index.html", vuelos=lista_vuelos, vuelos_vuelta=vuelos_vuelta, accion="Cerrar sesión", metodo_accion="cerrar_sesion")
 
+    vuelos_vuelta.clear()
     if not usuario_activo["correo"]:
         return render_template("index.html", vuelos=lista_vuelos, vuelos_vuelta=vuelos_vuelta, accion="Iniciar sesión", metodo_accion="iniciar_sesion")
 
@@ -245,7 +251,7 @@ def reservar_vuelo(numero_vuelo):
     presupuestoMax = presupuestoMax - (float(reserva["vuelo_ida"].precio))   #TODO: NO SE SI EL PASAJERO TOTAL ES NECESARIO, NO SE SI EL PRECIO SERA POR PERSONA O EN TOTAL
     print(presupuestoMax)
 
-    if buscar_vuelta == True:
+    if buscar_vuelta == True and len(vuelos_vuelta) >= numero_vuelo:
         reserva["vuelo_vuelta"] = vuelos_vuelta[numero_vuelo - 1]
         presupuestoMax = presupuestoMax - (float(reserva["vuelo_vuelta"].precio))
 
