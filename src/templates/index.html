@@ -124,16 +124,16 @@
                         <input class="form-check-input" type="checkbox" role="switch" name="checkBuscarAlojamiento" checked>
                         <label class="form-check-label text-white" for="flexSwitchCheckChecked">Buscar alojamiento</label><br>
                         <span class="text-white" style="font-size: 13px;">Recuerda ajustar tu presupuesto</span>
-                    </div>
-                    <div class="form-check form-switch ms-4">
+                        <br>
                         <input class="form-check-input" type="checkbox" role="switch" name="checkVuelta" checked>
-                        <label class="form-check-label text-white" for="flexSwitchCheckChecked">Buscar vuelo de vuelta</label><br>
+                        <label class="form-check-label text-white" for="flexSwitchCheckChecked">Buscar vuelo de vuelta</label>
                     </div>
                 </div>
 
+                <button class="btn btn-outline-light btn-lg px-5 mt-4 mb-2" type="submit">Buscar</button><br>
+
                 <span class="mensaje-error"><b>{{ error }}</b></span>
 
-                <button class="btn btn-outline-light btn-lg px-5 mt-4" type="submit">Buscar</button>
             </form>
         </div>
 
@@ -151,51 +151,52 @@
                     </tr>
                 </thead>
                 <tbody class="table-group-divider">
-                    {% for vuelo in vuelos %}
-                        <tr>
-                            <td>{{ vuelo.id }}</td>
-                            <td>{{ vuelo.origen }}
-                                {% if vuelos_vuelta[loop.index-1] %}
-                                    <br>
-                                    {{ vuelos_vuelta[loop.index-1].origen }}
-                                {% endif %}
-                            </td>
-                            <td>{{ vuelo.destino }}
-                                {% if vuelos_vuelta[loop.index-1] %}
-                                    <br>
-                                    {{ vuelos_vuelta[loop.index-1].destino }}
-                                {% endif %}
-                            </td>
-                            <td>{{ vuelo.precio }}
-                                {% if vuelos_vuelta[loop.index-1] %}
-                                    <br>
-                                    {{ vuelos_vuelta[loop.index-1].precio }}
-                                {% endif %}
-                            </td>
-                            <td>{{ vuelo.horaSalida }}
-                                {% if vuelos_vuelta[loop.index-1] %}
-                                    <br>
-                                    {{ vuelos_vuelta[loop.index-1].horaSalida }}
-                                {% endif %}
-                            </td>
-                            <td>{{ vuelo.horaLlegada }}
-                                {% if vuelos_vuelta[loop.index-1] %}
-                                    <br>
-                                    {{ vuelos_vuelta[loop.index-1].horaLlegada }}
-                                {% endif %}
-                            </td>
-                            <td>{{ vuelo.asientosDisponibles }}
-                                {% if vuelos_vuelta[loop.index-1] %}
-                                    <br>
-                                    {{ vuelos_vuelta[loop.index-1].asientosDisponibles }}
-                                {% endif %}
-                            </td>
-                            <td>
-                                <td><a href="{{ url_for('reservar_vuelo', numero_vuelo=vuelo.id) }}" class="btn btn-outline-light btn-dark">Reservar</a></td>
-                            </td>
-                        </tr>
-                    {% endfor %}
+                        {% for vuelo in vuelos %}
+                            <tr>
+                                <td>{{ vuelo.id }}</td>
+                                <td>{{ vuelo.origen }}
+                                    {% if vuelos_vuelta[loop.index-1] %}
+                                        <br>
+                                        {{ vuelos_vuelta[loop.index-1].origen }}
+                                    {% endif %}
+                                </td>
+                                <td>{{ vuelo.destino }}
+                                    {% if vuelos_vuelta[loop.index-1] %}
+                                        <br>
+                                        {{ vuelos_vuelta[loop.index-1].destino }}
+                                    {% endif %}
+                                </td>
+                                <td>{{ vuelo.precio }}
+                                    {% if vuelos_vuelta[loop.index-1] %}
+                                        <br>
+                                        {{ vuelos_vuelta[loop.index-1].precio }}
+                                    {% endif %}
+                                </td>
+                                <td>{{ vuelo.horaSalida }}
+                                    {% if vuelos_vuelta[loop.index-1] %}
+                                        <br>
+                                        {{ vuelos_vuelta[loop.index-1].horaSalida }}
+                                    {% endif %}
+                                </td>
+                                <td>{{ vuelo.horaLlegada }}
+                                    {% if vuelos_vuelta[loop.index-1] %}
+                                        <br>
+                                        {{ vuelos_vuelta[loop.index-1].horaLlegada }}
+                                    {% endif %}
+                                </td>
+                                <td>{{ vuelo.asientosDisponibles }}
+                                    {% if vuelos_vuelta[loop.index-1] %}
+                                        <br>
+                                        {{ vuelos_vuelta[loop.index-1].asientosDisponibles }}
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <td><a href="{{ url_for('reservar_vuelo', numero_vuelo=vuelo.id) }}" class="btn btn-outline-light btn-dark">Reservar</a></td>
+                                </td>
+                            </tr>
+                        {% endfor %}
                 </tbody>
+
             </table>
         </form>
     </section>

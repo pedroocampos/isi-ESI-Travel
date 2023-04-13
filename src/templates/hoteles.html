@@ -42,18 +42,25 @@
                     </tr>
                 </thead>
                 <tbody class="table-group-divider">
-                    {% for hotel in hoteles %}
+                    {% if hoteles %}
+                        {% for hotel in hoteles %}
+                            <tr>
+                                <td>{{ hotel.nombre }}</td>
+                                <td>{{ hotel.precio }}</td>
+                                <td>{{ hotel.fechaEntrada }}</td>
+                                <td>{{ hotel.fechaSalida }}</td>
+                                <td>
+                                    <td><a href="{{ url_for('terminar_reserva', hotel=hotel.nombre, precio_hotel=hotel.precio) }}" class="btn btn-outline-light btn-dark">Reservar</a></td>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
                         <tr>
-                            <td>{{ hotel.nombre }}</td>
-                            <td>{{ hotel.precio }}</td>
-                            <td>{{ hotel.fechaEntrada }}</td>
-                            <td>{{ hotel.fechaSalida }}</td>
-                            <td>
-                                <td><a href="{{ url_for('terminar_reserva', hotel=hotel.nombre, precio_hotel=hotel.precio) }}" class="btn btn-outline-light btn-dark">Reservar</a></td>
-                            </td>
+                            <td colspan="5">No hay hoteles disponibles</td>
                         </tr>
-                    {% endfor %}
+                    {% endif %}
                 </tbody>
+
             </table>
         </form>
     </section>

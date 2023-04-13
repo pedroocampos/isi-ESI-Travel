@@ -199,6 +199,12 @@ def buscar_vuelo():
         if float(vuelo.precio) < presupuestoMax:
             lista_vuelos.append(vuelo)
 
+    if not lista_vuelos and not usuario_activo["correo"]:
+        return render_template("index.html", accion="Iniciar sesión", metodo_accion="iniciar_sesion", error = "No se han encontrado vuelos.")
+    elif not lista_vuelos and usuario_activo["correo"]:
+        return render_template("index.html", accion="Cerrar sesión", metodo_accion="cerrar_sesion", error = "No se han encontrado vuelos.")
+
+
     if buscar_vuelta:
         try:
             response = amadeus.shopping.flight_offers_search.get(
@@ -229,7 +235,7 @@ def buscar_vuelo():
             )
             if float(vuelo.precio) < presupuestoMax:
                 vuelos_vuelta.append(vuelo)
-                
+
         if not usuario_activo["correo"]:
             return render_template("index.html", vuelos=lista_vuelos, vuelos_vuelta=vuelos_vuelta, accion="Iniciar sesión", metodo_accion="iniciar_sesion")
 
@@ -244,25 +250,18 @@ def buscar_vuelo():
 @app.route("/reservar/<int:numero_vuelo>")
 def reservar_vuelo(numero_vuelo):
     global buscar_alojamiento, lista_hoteles, presupuestoMax, pasajeros_total
-    print(pasajeros_total)
-    print(presupuestoMax)
     reserva["vuelo_ida"] = lista_vuelos[numero_vuelo - 1]
-    print((float(reserva["vuelo_ida"].precio)))
     presupuestoMax = presupuestoMax - (float(reserva["vuelo_ida"].precio))   #TODO: NO SE SI EL PASAJERO TOTAL ES NECESARIO, NO SE SI EL PRECIO SERA POR PERSONA O EN TOTAL
-    print(presupuestoMax)
 
     if buscar_vuelta == True and len(vuelos_vuelta) >= numero_vuelo:
         reserva["vuelo_vuelta"] = vuelos_vuelta[numero_vuelo - 1]
         presupuestoMax = presupuestoMax - (float(reserva["vuelo_vuelta"].precio))
 
-    buscar_hoteles()
-
     if not usuario_activo["correo"]:
         return render_template("login.html")
 
-    print("Antes de buscar hoteles")
     if buscar_alojamiento:
-        print("Buscando hoteles...")
+        buscar_hoteles()
         return render_template("hoteles.html", hoteles=lista_hoteles, accion="Cerrar sesión", metodo_accion="cerrar_sesion")
 
     return(terminar_reserva(hotel="", precio_hotel=0))
