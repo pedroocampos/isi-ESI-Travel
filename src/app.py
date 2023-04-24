@@ -222,9 +222,9 @@ def buscar_vuelo():
     '''
     Method name: buscar_vuelo
 	Description of the Method: busca vuelos en la API de Amadeus en función de lo introducido por el
-    usuario en la página index.html y muestra la página con los resultados, ya sea con o sin vuelos 
+    usuario en la página index.html y muestra la página con los resultados, ya sea con o sin vuelos
     de vuelta.
-    Return values: La página index.html con los resultados de vuelos correspondientes. 
+    Return values: La página index.html con los resultados de vuelos correspondientes.
     '''
     global buscar_alojamiento, buscar_vuelta
     parada = request.form.get("checkBuscarAlojamiento")
@@ -397,4 +397,4 @@ def buscar_hoteles():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0')
