@@ -26,3 +26,10 @@ Repositorio de apoyo: https://github.com/amadeus4dev/amadeus-python
 
 ## Autores del proyecto
 Pedro Campos Castellanos, Raúl Calzado Olmo y Raúl González Velázquez
+
+## Capturas
+![Formulario de búsqueda](https://github.com/pedroocampos/isi-ESI-Travel/assets/102856192/06b6bcae-66e2-4bb4-b5cb-e06413dd34be) ![Vuelos de ida y vuelta](https://github.com/pedroocampos/isi-ESI-Travel/assets/102856192/8f10f479-8d6e-4670-b400-837c5be0eb57)
+![Hoteles disponibles](https://github.com/pedroocampos/isi-ESI-Travel/assets/102856192/3335f932-f84b-4a23-9dff-5904e2b365da) ![Resumen de la reserva](https://github.com/pedroocampos/isi-ESI-Travel/assets/102856192/04987fc1-224f-415a-97d3-b5de4bfcc943)
+
+
+
