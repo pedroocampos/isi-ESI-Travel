@@ -23,3 +23,6 @@ En el código ya hay unas claves puestas para poder hacer llamadas a las APIs, p
 Primero hay que [registrarse](https://developers.amadeus.com/register) y [crear un proyecto](https://developers.amadeus.com/my-apps). Después de hacer esto, se verá la sección de 'API Keys' y esas son las claves que hay que poner en el código.
         
 Repositorio de apoyo: https://github.com/amadeus4dev/amadeus-python
+
+## Autores del proyecto
+Pedro Campos Castellanos, Raúl Calzado Olmo y Raúl González Velázquez
