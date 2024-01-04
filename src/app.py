@@ -21,8 +21,8 @@ db = SQLAlchemy(app)
 
 ''' Se introduce la clave de la API de Amadeus '''''
 amadeus = Client(
-    client_id='36eTUH6WOGQlrOkjeKr4K8QOVXNJe0iu',
-    client_secret='yI0mSUcRFgkLlaGs'
+    client_id=xxxxxxxxx,
+    client_secret=xxxxxxxx
     )
 
 class User(db.Model):
